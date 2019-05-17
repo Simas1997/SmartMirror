@@ -303,15 +303,42 @@ class Sensor(Frame):
    	
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
-       
+        self.tempamb = ''
+        #self.umid = ''
+
+
         self.titulo = "Temperatura Ambiente"
-        self.sensorlbl = Label(self, text=self.titulo)
+	self.sensorlbl = Label(self, text=self.titulo)
 	self.sensorlbl["font"] = ("Helvetica", texto_pequeno)
 	self.sensorlbl["bg"] = "black"
 	self.sensorlbl["fg"] = "white"
-        self.sensorlbl.pack(side=TOP, anchor=W)
-        self.leituras = Frame(self, bg="black")
-        self.leituras.pack(side=TOP)
+        self.sensorlbl.pack(side=TOP, anchor=W)        
+
+
+	self.tempamblbl = Label(self, text=self.titulo)
+	self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
+	self.tempamblbl["bg"] = "black"
+	self.tempamblbl["fg"] = "white"
+        self.tempamblbl.pack(side=TOP, anchor=W)
+        
+
+	try: 
+	 #faz leitura do sensor de temperatura e umidade
+	 #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
+ 
+	 #formata string de umidade e temperatura
+	 #umid2 = "{0:0.1f}".format(umidade) 
+	 #tempamb2 = "{0:0.1f}*C".format(temperatura)
+	  grau= u'\N{DEGREE SIGN}'
+	  tempamb2 = "20%sC" % (grau)
+            
+	  if self.tempamb != tempamb2:
+		  self.tempamb = tempamb2
+		  self.tempamblbl.config(text=tempamb2)
+                
+	except Exception as e:
+		#traceback.print_exc()
+		print "Error: %s. Cannot get sensor." % e
 
 	
 class FullscreenWindow:
@@ -372,7 +399,8 @@ class FullscreenWindow:
         self.clock.d_of_wlbl.configure(fg=aux.color)
         self.clock.datelbl.configure(fg=aux.color)
         self.noticias.get_manchete()
-	#self.Sensor.sensorlbl.configure(fg=aux.color)	
+	self.sensor.sensorlbl.configure(fg=aux.color)
+	self.sensor.tempamblbl.configure(fg=aux.color)	
         return "break"
 
 if __name__ == '__main__':
