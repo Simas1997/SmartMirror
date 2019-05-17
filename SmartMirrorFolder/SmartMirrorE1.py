@@ -265,7 +265,16 @@ class Noticias(Frame):
             for widget in self.manchetes.winfo_children():
                 widget.destroy()  
           
-            manchetes_url = "https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419"
+            manchetes_url = "http://rss.home.uol.com.br/index.xml" #principaisnoticias
+	    #manchetes_url = "http://rss.uol.com.br/feed/noticias.xml" #ultimasnoticias
+	    #manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
+	    #manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
+	    #manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
+	    #manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
+	    #manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
+	    #manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
+	    #manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
+
             feed = feedparser.parse(manchetes_url)
 
             for post in feed.entries[0:5]:
