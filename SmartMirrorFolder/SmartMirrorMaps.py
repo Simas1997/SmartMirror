@@ -79,7 +79,7 @@ class Clock(Frame):
         self.widget["bg"] = ("black")
         self.widget.pack(side=TOP)
 
-	# Inicializar label de tempo
+	        # Inicializar label de tempo
         self.time1 = ''
         self.timelbl = Label(self.widget, text = self.time1)
         self.timelbl["font"] = ("Helvetica", texto_grande)
@@ -150,21 +150,32 @@ class Weather(Frame): #Frame: elemento principal
         self.widget_clima["bg"] = ("black")
         self.widget_clima.pack(side=TOP, anchor=W)
 
-        self.templbl = Label(self.widget_clima)
-        self.templbl["font"] = ("Helvetica", texto_grande)
-        self.templbl["bg"] = ("black")
-        self.templbl["fg"] = ("white")
-        self.templbl.pack(side=LEFT, anchor=N)
+        self.widget_plot = Label(self.widget_clima)
+        self.widget_plot["bg"] = ("black")
+        self.plotClima()
+        self.widget_plot.pack(side=TOP, anchor=N)
 
-        self.piclbl = Label(self.widget_clima)
-        self.piclbl["bg"] = ("black")
-        self.piclbl.pack(side=LEFT, anchor=N, padx=20)
+        # self.templbl = Label(self.widget_clima)
+        # self.templbl["font"] = ("Helvetica", texto_grande)
+        # self.templbl["bg"] = ("black")
+        # self.templbl["fg"] = ("white")
+        # self.templbl.pack(side=LEFT, anchor=N)
+
+        # self.piclbl = Label(self.widget_clima)
+        # self.piclbl["bg"] = ("black")
+        # self.piclbl.pack(side=TOP, anchor=W, padx=40)
 
         self.atuallbl = Label(self.widget_clima)
         self.atuallbl["font"] = ("Helvetica", texto_medio)
         self.atuallbl["bg"] = ("black")
         self.atuallbl["fg"] = ("white")
         self.atuallbl.pack(side=TOP, anchor=W)
+
+        self.prevlbl = Label(self.widget_clima)
+        self.prevlbl["font"] = ("Helvetica", texto_pequeno)
+        self.prevlbl["bg"] = ("black")
+        self.prevlbl["fg"] = ("white")
+        self.prevlbl.pack(side=TOP, anchor=W)
 
         self.locallbl = Label(self.widget_clima)
         self.locallbl["font"] = ("Helvetica", texto_pequeno)
@@ -173,14 +184,22 @@ class Weather(Frame): #Frame: elemento principal
         self.locallbl.pack(side=TOP, anchor=W)
 
 
-        self.prevlbl = Label(self.widget_clima)
-        self.prevlbl["font"] = ("Helvetica", texto_pequeno)
-        self.prevlbl["bg"] = ("black")
-        self.prevlbl["fg"] = ("white")
-        self.prevlbl.pack(side=TOP, anchor=W)
-
-
         self.get_weather()
+
+    def plotClima(self):
+        
+        self.templbl = Label(self.widget_plot)
+        self.templbl["font"] = ("Helvetica", texto_gg)
+        self.templbl["bg"] = ("black")
+        self.templbl["fg"] = ("white")
+        self.templbl.pack(side=LEFT, anchor=N)
+
+        self.piclbl = Label(self.widget_plot)
+        self.piclbl["bg"] = ("black")
+        self.piclbl.pack(side=LEFT, anchor=N, padx=20)
+
+
+
 
     def get_ip(self):
         try:
