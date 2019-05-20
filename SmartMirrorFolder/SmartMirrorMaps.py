@@ -12,25 +12,48 @@ from datetime import datetime
 from PIL import Image, ImageTk
 
 #configuracao do sensor de temperatura utilizado (DHT22)
-#sensor = Adafruit_DHT.DHT22  
+#sensor = Adafruit_DHT.DHT22
 #configuracao do pino de leitura do sensor de temperatura
 #pin = 'P8_11'
 
 class aux():
     pushbutton=0
     color ="white"
+    #change_prof = 0
 
 
 weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96'
-weather_lang = 'pt' 
+weather_lang = 'pt'
 weather_unit = 'si'
-latitude = None 
-longitude = None 
+latitude = None
+longitude = None
 texto_gg = 94
 texto_grande = 48
 texto_medio = 28
 texto_pequeno = 10
+texto_pp = 10
 
+#Inicializando o googlemaps api
+gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
+#origin="%s"&","&"%s" %(lat,lon)
+origin="Avenida Nove de Julho, 3333, Jundiai"
+
+#fazer logica de alterar perfil aqui
+# if botao = 1
+#   destination = x
+#if botao = 1
+#   destination = y
+
+destination="Joao Carbonari Junior 64"
+#language=pt-BR
+#units=metric
+#region=br
+#deparature_time=now
+
+#map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
+map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg" % (origin,destination)
+map_req = requests.get(map_url)
+map_obj = json.loads(map_req.text)
 
 pic_lookup = {
     'clear-day': "assets/Sun.png",  # clear sky day
@@ -55,7 +78,7 @@ class Clock(Frame):
         self.widget = Frame(self)  #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget_clima
         self.widget["bg"] = ("black")
         self.widget.pack(side=TOP)
-     
+
 	# Inicializar label de tempo
         self.time1 = ''
         self.timelbl = Label(self.widget, text = self.time1)
@@ -69,7 +92,7 @@ class Clock(Frame):
         self.d_of_wlbl = Label(self.widget, text = self.d_of_w1)
         self.d_of_wlbl["font"] = ("Helvetica", texto_pequeno)
         self.d_of_wlbl["bg"] = ("black")
-        self.d_of_wlbl["fg"] = ("white")	     
+        self.d_of_wlbl["fg"] = ("white")
         self.d_of_wlbl.pack(side=TOP, anchor=E)
 
             # Inicializar label de data
@@ -82,32 +105,32 @@ class Clock(Frame):
         self.att()
 
     def att(self):
-	
+
 	now = datetime.now()
 	time2 = now.strftime("%H:%M")
 	d_of_w2 = now.strftime("%A")
 	if d_of_w2 == "Sunday":		d_of_w2 = "Domingo"
-	if d_of_w2 == "Saturday":	d_of_w2 = "Sabado" 
+	if d_of_w2 == "Saturday":	d_of_w2 = "Sabado"
 	if d_of_w2 == "Monday":		d_of_w2 = "Segunda-feira"
 	if d_of_w2 == "Tuesday":	d_of_w2 = "Terca-feira"
 	if d_of_w2 == "Wednesday":	d_of_w2 = "Quarta-feira"
 	if d_of_w2 == "Thursday":	d_of_w2 = "Quinta-feira"
 	if d_of_w2 == "Friday":		d_of_w2 = "Sexta-feira"
 	date2 = now.strftime("%d/%m/%Y")
-	
+
         # Verificar para atualizar
 	if time2 != self.time1:
         	self.time1 = time2
                 self.timelbl.config(text=time2)
-		
+
         if d_of_w2 != self.d_of_w1:
                 self.d_of_w1 = d_of_w2
                 self.d_of_wlbl.config(text=d_of_w2)
-		
+
         if date2 != self.date1:
                 self.date1 = date2
                 self.datelbl.config(text=date2)
-		            
+
 	self.timelbl.after(200, self.att)
 
 
@@ -116,24 +139,24 @@ class Clock(Frame):
 class Weather(Frame): #Frame: elemento principal
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black') #construtor da classe base
-        self.temp = '' 
-        self.local = '' 
-        self.prev = '' 
+        self.temp = ''
+        self.local = ''
+        self.prev = ''
         self.atual = ''
-        self.pic = '' 
-	
+        self.pic = ''
+
 
         self.widget_clima = Frame(self)  #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
         self.widget_clima["bg"] = ("black")
-        self.widget_clima.pack(side=TOP, anchor=N)
+        self.widget_clima.pack(side=TOP, anchor=W)
 
-        self.templbl = Label(self.widget_clima) 
+        self.templbl = Label(self.widget_clima)
         self.templbl["font"] = ("Helvetica", texto_grande)
         self.templbl["bg"] = ("black")
-        self.templbl["fg"] = ("white")	
+        self.templbl["fg"] = ("white")
         self.templbl.pack(side=LEFT, anchor=N)
 
-        self.piclbl = Label(self.widget_clima) 
+        self.piclbl = Label(self.widget_clima)
         self.piclbl["bg"] = ("black")
         self.piclbl.pack(side=LEFT, anchor=N, padx=20)
 
@@ -156,7 +179,7 @@ class Weather(Frame): #Frame: elemento principal
         self.prevlbl["fg"] = ("white")
         self.prevlbl.pack(side=TOP, anchor=W)
 
-        
+
         self.get_weather()
 
     def get_ip(self):
@@ -194,7 +217,7 @@ class Weather(Frame): #Frame: elemento principal
             r = requests.get(weather_req_url)
             weather_obj = json.loads(r.text)
 
-            grau= u'\N{DEGREE SIGN}' 
+            grau= u'\N{DEGREE SIGN}'
             temp2 = "%s%s" % (str(int(weather_obj['currently']['temperature'])), grau)
             atual2 = weather_obj['currently']['summary']
             prev2 = weather_obj["hourly"]["summary"]
@@ -244,10 +267,10 @@ class Weather(Frame): #Frame: elemento principal
 
 
 class Noticias(Frame):
-   	
+
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
-       
+
         self.titulo = "Noticias"
         self.noticiaslbl = Label(self, text=self.titulo)
         self.noticiaslbl["font"] = ("Helvetica", texto_medio)
@@ -256,7 +279,7 @@ class Noticias(Frame):
         self.noticiaslbl.pack(side=TOP, anchor=W)
         self.manchetes = Frame(self, bg="black")
         self.manchetes.pack(side=TOP)
-	
+
         self.get_manchete()
 
 
@@ -264,15 +287,15 @@ class Noticias(Frame):
         try:
             # remove all children
             for widget in self.manchetes.winfo_children():
-                widget.destroy()  
-          
+                widget.destroy()
+
             manchetes_url = "https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419"
             feed = feedparser.parse(manchetes_url)
 
             for post in feed.entries[0:5]:
                 headline = Manchetes_foto(self.manchetes, post.title)
                 headline.pack(side=TOP, anchor=W)
-                
+
         except Exception as e:
             #traceback.print_exc()
             print "Error: %s. Cannot get news." % e
@@ -299,75 +322,49 @@ class Manchetes_foto(Frame):
         self.eventNamelbl["bg"] = "black"
         self.eventNamelbl["fg"] = aux.color
         self.eventNamelbl.pack(side=LEFT, anchor=N)
-	
+
 class Sensor(Frame):
-   	
+
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
-       
+
         self.titulo = "Temperatura Ambiente"
-        self.sensorlbl = Label(self, text=self.titulo)
+
+        self.widgetSensor = Frame(self)
+        self.widgetSensor["bg"] = ("black")
+        self.widgetSensor.pack(side=TOP, anchor=N)
+
+        self.sensorlbl = Label(self.widgetSensor, text=self.titulo)
         self.sensorlbl["font"] = ("Helvetica", texto_pequeno)
         self.sensorlbl["bg"] = "black"
         self.sensorlbl["fg"] = "white"
         self.sensorlbl.pack(side=TOP, anchor=W)
-        self.leituras = Frame(self, bg="black")
-        self.leituras.pack(side=TOP)
+        #self.leituras = Frame(self, bg="black")
+        #self.leituras.pack(side=TOP)
 
 class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
     def __init__(self,master = None): #inicializo meu objeto, que se chama self e seus atributos (defino a funcao __init__)
         Frame.__init__(self,master,bg='black') #chamando o construtor(metodo) da classe pai
 
-        self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas) 
-        self.widgetRota["bg"] = ("black") 
+        self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+        self.widgetRota["bg"] = ("black")
         self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
-        
-        self.titulo = "Rota Desejada"
+
+        self.titulo = "Destino"
         self.rotaslbl = Label(self.widgetRota, text = self.titulo)
-        self.rotaslbl["font"] = ("Helvetica", texto_pequeno)
+        self.rotaslbl["font"] = ("Helvetica", texto_medio)
         self.rotaslbl["bg"] = "black"
         self.rotaslbl["fg"] = "white"
         self.rotaslbl.pack(side=TOP, anchor=W)
-
-
-        #self.directions = Frame(self, bg = "black")
-        #self.directions.pack(side=TOP)
         self.get_rota()
 
     def get_rota(self):
         try:
-            gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
-            #origin="%s"&","&"%s" %(lat,lon)
-            #destination=Joao+Carbonari+Junior+64
-            #language=pt-BR
-            #units=metric
-            #region=br
-            #deparature_time=now
+            
+            self.destino = map_obj['routes'][0]['legs'][0]['end_address']
+            self.destline = Plotdest(self.widgetRota, self.destino) #Estou chamando uma funcao e enviando para ela o widget e o objeto destino
+            self.destline.pack(side=TOP, anchor = W) # a funcao ira plotar o destino ao lado do tempo e km, usando left, aqui seto TOP para que o prox label venha embaixo
 
-            map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
-            map_req = requests.get(map_url)
-            map_obj = json.loads(map_req.text)
-            #print(map_obj)
-
-            self.tempo_est = map_obj['routes'][0]['legs'][0]['duration']['text']
-            #print(tempo_est)
-            self.time_estlbl = Label(self.widgetRota, text = self.tempo_est)
-            self.time_estlbl["font"] = ("Helvetica", texto_pequeno)
-            self.time_estlbl["bg"] = "black"
-            self.time_estlbl["fg"] = "white"
-            self.time_estlbl.pack(side=LEFT, anchor=E)
-
-            #self.templbl = Label(self.widget_clima) 
-
-            self.dist = map_obj['routes'][0]['legs'][0]['distance']['text']
-            self.distlbl = Label(self.widgetRota, text = self.dist)
-            self.distlbl["font"] = ("Helvetica", texto_pequeno)
-            self.distlbl["bg"] = "black"
-            self.distlbl["fg"] = "white"
-            self.distlbl.pack(side=LEFT, anchor=W)
-            #print(dist)
-
-            #self.step = map_obj['routes'][0]['legs'][0]['steps'][0]['html_instructions']
             for self.step_ in map_obj['routes'][0]['legs'][0]['steps']:
                 self.step = self.step_['html_instructions']
                 for i in range(0,len(self.step)):
@@ -376,41 +373,72 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
                     self.step = self.step.replace('<div style="font-size:0.9em">',". ")
                     self.step = self.step.replace("</div>","")
 
-                self.step_dist = self.step_['distance']['text']
-       
-                self.step_temp = self.step_['duration']['text']
-                #self.step_all = '{} ({};{})'.format(self.step[1], self.step_dist[2], self.step_temp[3])
+                self.stepline = PlotStep(self.widgetRota, self.step, self.step_) #idem a destline
+                self.stepline.pack(side=TOP, anchor=W)
 
-                self.steplbl = Label(self.widgetRota, text = self.step)
-                self.steplbl["font"] = ("Helvetica", texto_pequeno)
-                self.steplbl["bg"] = "black"
-                self.steplbl["fg"] = "white"
-                self.steplbl.pack(side=TOP, anchor=W)
-
-                self.step_distlbl = Label(self.widgetRota, text = self.step_dist)
-                self.step_distlbl["font"] = ("Helvetica", texto_pequeno)
-                self.step_distlbl["bg"] = "black"
-                self.step_distlbl["fg"] = "white"
-                self.step_distlbl.pack(side=TOP, anchor=W)
-
-                self.step_templbl = Label(self.widgetRota, text = self.step_temp)
-                self.step_templbl["font"] = ("Helvetica", texto_pequeno)
-                self.step_templbl["bg"] = "black"
-                self.step_templbl["fg"] = "white"
-                self.step_templbl.pack(side=TOP, anchor=W)
-
-
-                #print("%s (%s; %s)" % (step,step_dist,step_temp))
                 
         except Exception as e:
-            #traceback.print_exc()
             print "Error: %s. Cannot get routes." % e
 
-        #self.after(600000, self.get_rota)
+
+class Plotdest(Frame):
+    def __init__(self, master= None, event_name=""):
+        Frame.__init__(self, master, bg='black')
+
+        self.event_name = event_name
+        self.destinolbl = Label(self, text = self.event_name)
+        self.destinolbl["font"] = ("Helvetica", texto_pp)
+        self.destinolbl["bg"] = "black"
+        self.destinolbl["fg"] = "white"
+        self.destinolbl.pack(side=LEFT, anchor=W)
+
+        self.dist = map_obj['routes'][0]['legs'][0]['distance']['text']
+        self.dist_str = "(" + self.dist + ","
+        self.distlbl = Label(self, text = self.dist_str)
+        self.distlbl["font"] = ("Helvetica", texto_pp)
+        self.distlbl["bg"] = "black"
+        self.distlbl["fg"] = "white"
+        self.distlbl.pack(side=LEFT, anchor=W)
+        
+
+        self.tempo_est = map_obj['routes'][0]['legs'][0]['duration']['text']
+        self.tempo_est_str = self.tempo_est + ")"
+        self.time_estlbl = Label(self, text = self.tempo_est_str)
+        self.time_estlbl["font"] = ("Helvetica", texto_pp)
+        self.time_estlbl["bg"] = "black"
+        self.time_estlbl["fg"] = "white"
+        self.time_estlbl.pack(side=LEFT, anchor=W)
+
+class PlotStep(Frame):
+    def __init__(self, master= None, event_name="",event_name2=""):
+        Frame.__init__(self, master, bg='black')
+
+        self.step_ = event_name2
+
+        self.event_name = event_name
+        self.steplbl = Label(self, text = self.event_name, wraplength = 600)
+        self.steplbl["font"] = ("Helvetica", texto_pp)
+        self.steplbl["bg"] = "black"
+        self.steplbl["fg"] = "white"
+        self.steplbl.pack(side=LEFT, anchor=W)
+
+        self.step_dist = self.step_['distance']['text']
+        self.step_dist_str = "(" + self.step_dist + ","
+        self.step_distlbl = Label(self, text = self.step_dist_str)
+        self.step_distlbl["font"] = ("Helvetica", texto_pp)
+        self.step_distlbl["bg"] = "black"
+        self.step_distlbl["fg"] = "white"
+        self.step_distlbl.pack(side=LEFT, anchor=W)
+
+        self.step_temp = self.step_['duration']['text']
+        self.step_temp_str = self.step_temp + ")"
+        self.step_templbl = Label(self, text = self.step_temp_str)
+        self.step_templbl["font"] = ("Helvetica", texto_pp)
+        self.step_templbl["bg"] = "black"
+        self.step_templbl["fg"] = "white"
+        self.step_templbl.pack(side=LEFT, anchor=W)
 
 
-
-	
 class FullscreenWindow:
 
     def __init__(self):
@@ -426,22 +454,23 @@ class FullscreenWindow:
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.tk.bind("<space>", self.changeColor)
+        #self.tk.bind("<p>", self.changeProfile)
         # clock
         self.clock = Clock(self.topFrame)
-        self.clock.pack(side=RIGHT, anchor=N, padx=100, pady=60)
+        self.clock.pack(side=RIGHT, anchor=N, padx=100, pady=50)
         # weather
         self.weather = Weather(self.topFrame)
-        self.weather.pack(side=LEFT, anchor=N, padx=100, pady=60)
+        self.weather.pack(side=LEFT, anchor=N, padx=100, pady=50)
         # news
         self.noticias = Noticias(self.bottomFrame)
-        self.noticias.pack(side=LEFT, anchor=S, padx=100, pady=60)
+        self.noticias.pack(side=LEFT, anchor=S, padx=100, pady=100)
         #sensor
         self.sensor = Sensor(self.centerFrame)
-        self.sensor.pack(side=LEFT, anchor=N, padx=50, pady=30)
+        self.sensor.pack(side=LEFT, anchor=N, padx=50, pady=10)
         #rotas
-        self.rotas = Rotas(self.centerFrame)
-        self.rotas.pack(side=RIGHT, anchor=N, padx=60, pady=100)
-        
+        self.rotas = Rotas(self.bottomFrame)
+        self.rotas.pack(side=RIGHT, anchor=S, padx=60, pady=100)
+
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  # Just toggling the boolean
         self.tk.attributes("-fullscreen", self.state)
@@ -451,8 +480,16 @@ class FullscreenWindow:
         self.state = False
         self.tk.attributes("-fullscreen", False)
         return "break"
+    
+    #def changeProfile(self, event=None):
+    #     aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
+    #     if aux.change_prof == 0
+    #         destination = Joao Carbonari Junior 64
+    #     if aux.change_prof == 1
+    #         destination = Avenida Nove de julho 3333
 
-    def changeColor(self, event=None):         
+
+    def changeColor(self, event=None):
         aux.pushbutton = aux.pushbutton+1
         if aux.pushbutton == 0:
             aux.color = "white"
@@ -472,7 +509,7 @@ class FullscreenWindow:
         self.clock.d_of_wlbl.configure(fg=aux.color)
         self.clock.datelbl.configure(fg=aux.color)
         self.noticias.get_manchete()
-	#self.Sensor.sensorlbl.configure(fg=aux.color)	
+	#self.Sensor.sensorlbl.configure(fg=aux.color)
         return "break"
 
 if __name__ == '__main__':
