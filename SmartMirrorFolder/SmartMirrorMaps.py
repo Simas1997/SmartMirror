@@ -19,7 +19,7 @@ from PIL import Image, ImageTk
 class aux():
     pushbutton=0
     color ="white"
-    #change_prof = 0
+    change_prof=0
 
 
 weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96'
@@ -33,27 +33,6 @@ texto_medio = 28
 texto_pequeno = 10
 texto_pp = 10
 
-#Inicializando o googlemaps api
-gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
-#origin="%s"&","&"%s" %(lat,lon)
-origin="Avenida Nove de Julho, 3333, Jundiai"
-
-#fazer logica de alterar perfil aqui
-# if botao = 1
-#   destination = x
-#if botao = 1
-#   destination = y
-
-destination="Joao Carbonari Junior 64"
-#language=pt-BR
-#units=metric
-#region=br
-#deparature_time=now
-
-#map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
-map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg" % (origin,destination)
-map_req = requests.get(map_url)
-map_obj = json.loads(map_req.text)
 
 pic_lookup = {
     'clear-day': "assets/Sun.png",  # clear sky day
@@ -154,16 +133,6 @@ class Weather(Frame): #Frame: elemento principal
         self.widget_plot["bg"] = ("black")
         self.plotClima()
         self.widget_plot.pack(side=TOP, anchor=N)
-
-        # self.templbl = Label(self.widget_clima)
-        # self.templbl["font"] = ("Helvetica", texto_grande)
-        # self.templbl["bg"] = ("black")
-        # self.templbl["fg"] = ("white")
-        # self.templbl.pack(side=LEFT, anchor=N)
-
-        # self.piclbl = Label(self.widget_clima)
-        # self.piclbl["bg"] = ("black")
-        # self.piclbl.pack(side=TOP, anchor=W, padx=40)
 
         self.atuallbl = Label(self.widget_clima)
         self.atuallbl["font"] = ("Helvetica", texto_medio)
@@ -365,6 +334,55 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
     def __init__(self,master = None): #inicializo meu objeto, que se chama self e seus atributos (defino a funcao __init__)
         Frame.__init__(self,master,bg='black') #chamando o construtor(metodo) da classe pai
 
+    
+
+        #Inicializando o googlemaps api
+        # gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
+        #origin="%s"&","&"%s" %(lat,lon)
+        self.origin="Avenida Nove de Julho, 3333, Jundiai"
+
+        #fazer logica de alterar perfil aqui
+        # if botao = 1
+        #   destination = x
+        #if botao = 1
+        #   destination = y
+
+        self.destination="Joao Carbonari Junior 64"
+        #language=pt-BR
+        #units=metric
+        #region=br
+        #deparature_time=now
+        self.get_url()
+
+        # self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+        # self.widgetRota["bg"] = ("black")
+        # self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
+
+        # self.titulo = "Destino"
+        # self.rotaslbl = Label(self.widgetRota, text = self.titulo)
+        # self.rotaslbl["font"] = ("Helvetica", texto_medio)
+        # self.rotaslbl["bg"] = "black"
+        # self.rotaslbl["fg"] = "white"
+        # self.rotaslbl.pack(side=TOP, anchor=W)
+        # self.get_rota()
+
+    def get_url(self):
+        
+        #self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+        # if destroy == 1:
+        #     #self.widgetRota.destroy()
+        #     self.destination = "Avenida Nove de Julho 500, Jundiai"
+        # elif destroy == 2:
+        #     #self.widgetRota.destroy()
+        #     self.destination = "Joao Carbonari Junior 64" 
+
+        gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
+        #map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
+        map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg" % (self.origin,self.destination)
+        map_req = requests.get(map_url)
+        self.map_obj = json.loads(map_req.text)
+
+        
         self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
         self.widgetRota["bg"] = ("black")
         self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
@@ -376,15 +394,18 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.rotaslbl["fg"] = "white"
         self.rotaslbl.pack(side=TOP, anchor=W)
         self.get_rota()
+        self.after(600000, self.get_url)
 
     def get_rota(self):
         try:
             
-            self.destino = map_obj['routes'][0]['legs'][0]['end_address']
-            self.destline = Plotdest(self.widgetRota, self.destino) #Estou chamando uma funcao e enviando para ela o widget e o objeto destino
+            self.destino = self.map_obj['routes'][0]['legs'][0]['end_address']
+            self.destline = Label(self.widgetRota)
+            self.destline["bg"] = "black"
+            self.plotdest() #Chamo a funcao, nao preciso enviar o objeto self.destino, pois estamos dentro da mesma classe
             self.destline.pack(side=TOP, anchor = W) # a funcao ira plotar o destino ao lado do tempo e km, usando left, aqui seto TOP para que o prox label venha embaixo
 
-            for self.step_ in map_obj['routes'][0]['legs'][0]['steps']:
+            for self.step_ in self.map_obj['routes'][0]['legs'][0]['steps']:
                 self.step = self.step_['html_instructions']
                 for i in range(0,len(self.step)):
                     self.step = self.step.replace("<b>","")
@@ -392,50 +413,45 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
                     self.step = self.step.replace('<div style="font-size:0.9em">',". ")
                     self.step = self.step.replace("</div>","")
 
-                self.stepline = PlotStep(self.widgetRota, self.step, self.step_) #idem a destline
+                self.stepline = Label(self.widgetRota)
+                self.stepline["bg"] = "black"
+                self.plotstep()
                 self.stepline.pack(side=TOP, anchor=W)
-
                 
         except Exception as e:
             print "Error: %s. Cannot get routes." % e
 
 
-class Plotdest(Frame):
-    def __init__(self, master= None, event_name=""):
-        Frame.__init__(self, master, bg='black')
-
-        self.event_name = event_name
-        self.destinolbl = Label(self, text = self.event_name)
+    
+    def plotdest(self):
+        
+        self.destinolbl = Label(self.destline, text = self.destino)
         self.destinolbl["font"] = ("Helvetica", texto_pp)
         self.destinolbl["bg"] = "black"
         self.destinolbl["fg"] = "white"
         self.destinolbl.pack(side=LEFT, anchor=W)
 
-        self.dist = map_obj['routes'][0]['legs'][0]['distance']['text']
+        self.dist = self.map_obj['routes'][0]['legs'][0]['distance']['text']
         self.dist_str = "(" + self.dist + ","
-        self.distlbl = Label(self, text = self.dist_str)
+        self.distlbl = Label(self.destline, text = self.dist_str)
         self.distlbl["font"] = ("Helvetica", texto_pp)
         self.distlbl["bg"] = "black"
         self.distlbl["fg"] = "white"
         self.distlbl.pack(side=LEFT, anchor=W)
         
 
-        self.tempo_est = map_obj['routes'][0]['legs'][0]['duration']['text']
+        self.tempo_est = self.map_obj['routes'][0]['legs'][0]['duration']['text']
         self.tempo_est_str = self.tempo_est + ")"
-        self.time_estlbl = Label(self, text = self.tempo_est_str)
+        self.time_estlbl = Label(self.destline, text = self.tempo_est_str)
         self.time_estlbl["font"] = ("Helvetica", texto_pp)
         self.time_estlbl["bg"] = "black"
         self.time_estlbl["fg"] = "white"
         self.time_estlbl.pack(side=LEFT, anchor=W)
 
-class PlotStep(Frame):
-    def __init__(self, master= None, event_name="",event_name2=""):
-        Frame.__init__(self, master, bg='black')
 
-        self.step_ = event_name2
-
-        self.event_name = event_name
-        self.steplbl = Label(self, text = self.event_name, wraplength = 600)
+    def plotstep(self):
+        
+        self.steplbl = Label(self.stepline, text = self.step, wraplength = 600)
         self.steplbl["font"] = ("Helvetica", texto_pp)
         self.steplbl["bg"] = "black"
         self.steplbl["fg"] = "white"
@@ -443,7 +459,7 @@ class PlotStep(Frame):
 
         self.step_dist = self.step_['distance']['text']
         self.step_dist_str = "(" + self.step_dist + ","
-        self.step_distlbl = Label(self, text = self.step_dist_str)
+        self.step_distlbl = Label(self.stepline, text = self.step_dist_str)
         self.step_distlbl["font"] = ("Helvetica", texto_pp)
         self.step_distlbl["bg"] = "black"
         self.step_distlbl["fg"] = "white"
@@ -451,7 +467,7 @@ class PlotStep(Frame):
 
         self.step_temp = self.step_['duration']['text']
         self.step_temp_str = self.step_temp + ")"
-        self.step_templbl = Label(self, text = self.step_temp_str)
+        self.step_templbl = Label(self.stepline, text = self.step_temp_str)
         self.step_templbl["font"] = ("Helvetica", texto_pp)
         self.step_templbl["bg"] = "black"
         self.step_templbl["fg"] = "white"
@@ -473,7 +489,7 @@ class FullscreenWindow:
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         self.tk.bind("<space>", self.changeColor)
-        #self.tk.bind("<p>", self.changeProfile)
+        self.tk.bind("<p>", self.changeProfile)
         # clock
         self.clock = Clock(self.topFrame)
         self.clock.pack(side=RIGHT, anchor=N, padx=100, pady=50)
@@ -482,13 +498,13 @@ class FullscreenWindow:
         self.weather.pack(side=LEFT, anchor=N, padx=100, pady=50)
         # news
         self.noticias = Noticias(self.bottomFrame)
-        self.noticias.pack(side=LEFT, anchor=S, padx=100, pady=100)
+        self.noticias.pack(side=LEFT, anchor=S, padx=100, pady=60)
         #sensor
         self.sensor = Sensor(self.centerFrame)
         self.sensor.pack(side=LEFT, anchor=N, padx=50, pady=10)
         #rotas
         self.rotas = Rotas(self.bottomFrame)
-        self.rotas.pack(side=RIGHT, anchor=S, padx=60, pady=100)
+        self.rotas.pack(side=RIGHT, anchor=S, padx=60, pady=60)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  # Just toggling the boolean
@@ -500,12 +516,19 @@ class FullscreenWindow:
         self.tk.attributes("-fullscreen", False)
         return "break"
     
-    #def changeProfile(self, event=None):
-    #     aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
-    #     if aux.change_prof == 0
-    #         destination = Joao Carbonari Junior 64
-    #     if aux.change_prof == 1
-    #         destination = Avenida Nove de julho 3333
+    def changeProfile(self, event=None):
+        aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
+        if aux.change_prof == 1:
+            self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
+            #self.rotas.get_url(1)
+        if aux.change_prof == 2:
+            self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Joao Carbonari Junior 64"
+            #self.rotas.get_url(2) 
+            aux.change_prof = 0
+        self.rotas.get_url()            
+        return "break"
 
 
     def changeColor(self, event=None):
