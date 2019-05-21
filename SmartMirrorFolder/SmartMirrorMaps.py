@@ -305,7 +305,7 @@ class Manchetes_foto(Frame):
         self.piclbl.pack(side=LEFT, anchor=N)
 
         self.eventName = event_name
-        self.eventNamelbl = Label(self, text=self.eventName)
+        self.eventNamelbl = Label(self, text=self.eventName, wraplength = 400)
         self.eventNamelbl["font"] = ("Helvetica", texto_pequeno)
         self.eventNamelbl["bg"] = "black"
         self.eventNamelbl["fg"] = aux.color
@@ -424,9 +424,19 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
 
     
     def plotdest(self):
+
+        image = Image.open("assets/Arrow2.png")
+        image = image.resize((25, 25), Image.ANTIALIAS)
+        image = image.convert('RGB')
+        photo = ImageTk.PhotoImage(image)
+
+        self.main_arrowlbl = Label(self.destline, bg='black', image=photo)
+        self.main_arrowlbl.image = photo
+        self.main_arrowlbl.pack(side=LEFT, anchor=W)
+
         
-        self.destinolbl = Label(self.destline, text = self.destino)
-        self.destinolbl["font"] = ("Helvetica", texto_pp)
+        self.destinolbl = Label(self.destline, text = self.destino, wraplength = 400)
+        self.destinolbl["font"] = ("Helvetica", 12)
         self.destinolbl["bg"] = "black"
         self.destinolbl["fg"] = "white"
         self.destinolbl.pack(side=LEFT, anchor=W)
@@ -441,6 +451,8 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         
 
         self.tempo_est = self.map_obj['routes'][0]['legs'][0]['duration']['text']
+        for i in range(0,len(self.tempo_est)):
+            self.tempo_est = self.tempo_est.replace("minutos","min")
         self.tempo_est_str = self.tempo_est + ")"
         self.time_estlbl = Label(self.destline, text = self.tempo_est_str)
         self.time_estlbl["font"] = ("Helvetica", texto_pp)
@@ -451,7 +463,16 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
 
     def plotstep(self):
         
-        self.steplbl = Label(self.stepline, text = self.step, wraplength = 600)
+        image = Image.open("assets/Arrow1.png")
+        image = image.resize((25, 25), Image.ANTIALIAS)
+        image = image.convert('RGB')
+        photo = ImageTk.PhotoImage(image)
+
+        self.arrowlbl = Label(self.stepline, bg='black', image=photo)
+        self.arrowlbl.image = photo
+        self.arrowlbl.pack(side=LEFT, anchor=W)
+
+        self.steplbl = Label(self.stepline, text = self.step, wraplength = 400)
         self.steplbl["font"] = ("Helvetica", texto_pp)
         self.steplbl["bg"] = "black"
         self.steplbl["fg"] = "white"
@@ -466,6 +487,8 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.step_distlbl.pack(side=LEFT, anchor=W)
 
         self.step_temp = self.step_['duration']['text']
+        for i in range(0,len(self.step_temp)):
+            self.step_temp = self.step_temp.replace("minutos","min")
         self.step_temp_str = self.step_temp + ")"
         self.step_templbl = Label(self.stepline, text = self.step_temp_str)
         self.step_templbl["font"] = ("Helvetica", texto_pp)
@@ -492,19 +515,19 @@ class FullscreenWindow:
         self.tk.bind("<p>", self.changeProfile)
         # clock
         self.clock = Clock(self.topFrame)
-        self.clock.pack(side=RIGHT, anchor=N, padx=100, pady=50)
+        self.clock.pack(side=RIGHT, anchor=N, padx=10, pady=10)
         # weather
         self.weather = Weather(self.topFrame)
-        self.weather.pack(side=LEFT, anchor=N, padx=100, pady=50)
+        self.weather.pack(side=LEFT, anchor=N, padx=10, pady=10)
         # news
         self.noticias = Noticias(self.bottomFrame)
-        self.noticias.pack(side=LEFT, anchor=S, padx=100, pady=60)
+        self.noticias.pack(side=LEFT, anchor=S, padx=10, pady=60)
         #sensor
         self.sensor = Sensor(self.centerFrame)
-        self.sensor.pack(side=LEFT, anchor=N, padx=50, pady=10)
+        self.sensor.pack(side=LEFT, anchor=N, padx=10, pady=10)
         #rotas
         self.rotas = Rotas(self.bottomFrame)
-        self.rotas.pack(side=RIGHT, anchor=S, padx=60, pady=60)
+        self.rotas.pack(side=RIGHT, anchor=S, padx=10, pady=60)
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  # Just toggling the boolean
@@ -518,6 +541,7 @@ class FullscreenWindow:
     
     def changeProfile(self, event=None):
         aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
+        self.rotas.widgetRota.destroy()
         if aux.change_prof == 1:
             self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
