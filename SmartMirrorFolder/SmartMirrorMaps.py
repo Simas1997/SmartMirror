@@ -258,15 +258,29 @@ class Noticias(Frame):
 
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
-
-        self.titulo = "Noticias"
-        self.noticiaslbl = Label(self, text=self.titulo)
-        self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-        self.noticiaslbl["bg"] = "black"
-        self.noticiaslbl["fg"] = "white"
-        self.noticiaslbl.pack(side=TOP, anchor=W)
+        
         self.manchetes = Frame(self, bg="black")
         self.manchetes.pack(side=TOP)
+
+        # self.titulo = "Noticias"
+        # self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+        # self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+        # self.noticiaslbl["bg"] = "black"
+        # self.noticiaslbl["fg"] = "white"
+        # self.noticiaslbl.pack(side=TOP, anchor=W)
+        
+
+        #manchetes_url = "https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419"
+
+        self.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principaisnoticias
+        #manchetes_url = "http://rss.uol.com.br/feed/noticias.xml" #ultimasnoticias
+        #manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
+        #manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
+        #manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
+        #manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
+        #manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
+        #manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
+        #manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
 
         self.get_manchete()
 
@@ -277,8 +291,14 @@ class Noticias(Frame):
             for widget in self.manchetes.winfo_children():
                 widget.destroy()
 
-            manchetes_url = "https://news.google.com/rss?hl=pt-BR&gl=BR&ceid=BR:pt-419"
-            feed = feedparser.parse(manchetes_url)
+            self.titulo = "Noticias"
+            self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+            self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+            self.noticiaslbl["bg"] = "black"
+            self.noticiaslbl["fg"] = "white"
+            self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            feed = feedparser.parse(self.manchetes_url)
 
             for post in feed.entries[0:5]:
                 headline = Manchetes_foto(self.manchetes, post.title)
@@ -352,11 +372,11 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         #units=metric
         #region=br
         #deparature_time=now
-        self.get_url()
+        
 
-        # self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
-        # self.widgetRota["bg"] = ("black")
-        # self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
+        self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+        self.widgetRota["bg"] = ("black")
+        self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
 
         # self.titulo = "Destino"
         # self.rotaslbl = Label(self.widgetRota, text = self.titulo)
@@ -364,6 +384,8 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         # self.rotaslbl["bg"] = "black"
         # self.rotaslbl["fg"] = "white"
         # self.rotaslbl.pack(side=TOP, anchor=W)
+
+        self.get_url()
         # self.get_rota()
 
     def get_url(self):
@@ -375,6 +397,9 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         # elif destroy == 2:
         #     #self.widgetRota.destroy()
         #     self.destination = "Joao Carbonari Junior 64" 
+        for widget in self.widgetRota.winfo_children():
+             widget.destroy()
+
 
         gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
         #map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
@@ -383,9 +408,9 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.map_obj = json.loads(map_req.text)
 
         
-        self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
-        self.widgetRota["bg"] = ("black")
-        self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
+        # self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+        # self.widgetRota["bg"] = ("black")
+        # self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
 
         self.titulo = "Destino"
         self.rotaslbl = Label(self.widgetRota, text = self.titulo)
@@ -541,17 +566,20 @@ class FullscreenWindow:
     
     def changeProfile(self, event=None):
         aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
-        self.rotas.widgetRota.destroy()
+        #self.rotas.widgetRota.destroy()
         if aux.change_prof == 1:
-            self.rotas.widgetRota.destroy()
+            #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
+            self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
             #self.rotas.get_url(1)
         if aux.change_prof == 2:
-            self.rotas.widgetRota.destroy()
+            #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Joao Carbonari Junior 64"
+            self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias 
             #self.rotas.get_url(2) 
             aux.change_prof = 0
-        self.rotas.get_url()            
+        self.rotas.get_url()
+        self.noticias.get_manchete()            
         return "break"
 
 
