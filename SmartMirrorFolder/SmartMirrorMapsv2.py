@@ -123,6 +123,8 @@ class Weather(Frame): #Frame: elemento principal
         self.prev = ''
         self.atual = ''
         self.pic = ''
+        self.tempamb = ''
+        self.umid = ''
 
 
         self.widget_clima = Frame(self)  #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
@@ -151,6 +153,41 @@ class Weather(Frame): #Frame: elemento principal
         self.locallbl["bg"] = ("black")
         self.locallbl["fg"] = ("white")
         self.locallbl.pack(side=TOP, anchor=W)
+
+	    self.tempamblbl = Label(self, text=self.titulo)
+	    self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
+	    self.tempamblbl["bg"] = "black"
+	    self.tempamblbl["fg"] = "white"
+        self.tempamblbl.pack(side=TOP, anchor=W)
+
+	    self.umidlbl = Label(self, text=self.titulo)
+	    self.umidlbl["font"] = ("Helvetica", texto_pequeno)
+	    self.umidlbl["bg"] = "black"
+	    self.umidlbl["fg"] = "white"
+        self.umidlbl.pack(side=TOP, anchor=W)
+
+	    try: 
+	        #faz leitura do sensor de temperatura e umidade
+	        #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
+ 
+	        #formata string de umidade e temperatura
+	        #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
+	        #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
+	        grau= u'\N{DEGREE SIGN}'
+	        tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
+	        umid2 = "Umidade do ar: 75%"
+            
+	        if self.tempamb != tempamb2:
+		        self.tempamb = tempamb2
+		        self.tempamblbl.config(text=tempamb2)
+
+	        if self.umid != umid2:
+		        self.umid = umid2
+		        self.umidlbl.config(text=umid2)
+                
+	    except Exception as e:
+		    #traceback.print_exc()
+		    print "Error: %s. Cannot get sensor." % e
 
 
         self.get_weather()
@@ -283,22 +320,19 @@ class Noticias(Frame):
                 widget.destroy()
 
             if aux.change_prof == 0:
-	    	self.titulo = "Ultimas Noticias"
+	    	    self.titulo = "Ultimas Noticias"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
-	    
             if aux.change_prof == 1:
-		self.titulo = "Principais Noticias"
+		        self.titulo = "Principais Noticias"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)            	
-		
-
             if aux.change_prof == 2:
             	self.titulo = "Tecnologia"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -307,56 +341,54 @@ class Noticias(Frame):
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
 
-	    if aux.change_prof == 3:
-	    	self.titulo = "Economia"
+	        if aux.change_prof == 3:
+	    	    self.titulo = "Economia"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
  
-	    if aux.change_prof == 4:
-	    	self.titulo = "Esportes"
+	        if aux.change_prof == 4:
+	    	    self.titulo = "Esportes"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
  
-	    if aux.change_prof == 5:
-	    	self.titulo = "Jogos"
+	        if aux.change_prof == 5:
+	    	    self.titulo = "Jogos"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
  
-	    if aux.change_prof == 6:
-	    	self.titulo = "Cinema"
+	        if aux.change_prof == 6:
+	    	    self.titulo = "Cinema"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
  
-	    if aux.change_prof == 7:
-	    	self.titulo = "Vestibular"
+	        if aux.change_prof == 7:
+	    	    self.titulo = "Vestibular"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
  
-	    if aux.change_prof == 8:
-	    	self.titulo = "Musica"
+	        if aux.change_prof == 8:
+	    	    self.titulo = "Musica"
             	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
             	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
             	self.noticiaslbl["bg"] = "black"
             	self.noticiaslbl["fg"] = "white"
             	self.noticiaslbl.pack(side=TOP, anchor=W)
-            	aux.change_prof = 0
-	    
-
+            aux.change_prof = 0    
             feed = feedparser.parse(self.manchetes_url)
 
             for post in feed.entries[0:5]:
@@ -390,60 +422,60 @@ class Manchetes_foto(Frame):
         self.eventNamelbl["fg"] = aux.color
         self.eventNamelbl.pack(side=LEFT, anchor=N)
 
-class Sensor(Frame):
+# class Sensor(Frame):
 
-    def __init__(self, master = None):
-        Frame.__init__(self, master, bg='black')
+#     def __init__(self, master = None):
+#         Frame.__init__(self, master, bg='black')
 
-	self.tempamb = ''
-        self.umid = ''
+#         self.tempamb = ''
+#         self.umid = ''
 
-        self.titulo = " "
+#         self.titulo = " "
 
-        self.widgetSensor = Frame(self)
-        self.widgetSensor["bg"] = ("black")
-        self.widgetSensor.pack(side=TOP, anchor=N)
+#         self.widgetSensor = Frame(self)
+#         self.widgetSensor["bg"] = ("black")
+#         self.widgetSensor.pack(side=TOP, anchor=N)
 
-        self.sensorlbl = Label(self.widgetSensor, text=self.titulo)
-        self.sensorlbl["font"] = ("Helvetica", texto_pequeno)
-        self.sensorlbl["bg"] = "black"
-        self.sensorlbl["fg"] = "white"
-        self.sensorlbl.pack(side=TOP, anchor=W)
+#         self.sensorlbl = Label(self.widgetSensor, text=self.titulo)
+#         self.sensorlbl["font"] = ("Helvetica", texto_pequeno)
+#         self.sensorlbl["bg"] = "black"
+#         self.sensorlbl["fg"] = "white"
+#         self.sensorlbl.pack(side=TOP, anchor=W)
 
-	self.tempamblbl = Label(self, text=self.titulo)
-	self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
-	self.tempamblbl["bg"] = "black"
-	self.tempamblbl["fg"] = "white"
-        self.tempamblbl.pack(side=TOP, anchor=W)
+# 	    self.tempamblbl = Label(self, text=self.titulo)
+# 	    self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
+# 	    self.tempamblbl["bg"] = "black"
+# 	    self.tempamblbl["fg"] = "white"
+#         self.tempamblbl.pack(side=TOP, anchor=W)
 
-	self.umidlbl = Label(self, text=self.titulo)
-	self.umidlbl["font"] = ("Helvetica", texto_pequeno)
-	self.umidlbl["bg"] = "black"
-	self.umidlbl["fg"] = "white"
-        self.umidlbl.pack(side=TOP, anchor=W)
+# 	    self.umidlbl = Label(self, text=self.titulo)
+# 	    self.umidlbl["font"] = ("Helvetica", texto_pequeno)
+# 	    self.umidlbl["bg"] = "black"
+# 	    self.umidlbl["fg"] = "white"
+#         self.umidlbl.pack(side=TOP, anchor=W)
 
-	try: 
-	 #faz leitura do sensor de temperatura e umidade
-	 #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
+# 	try: 
+# 	 #faz leitura do sensor de temperatura e umidade
+# 	 #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
  
-	 #formata string de umidade e temperatura
-	 #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
-	 #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
-	  grau= u'\N{DEGREE SIGN}'
-	  tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
-	  umid2 = "Umidade do ar: 75%"
+# 	 #formata string de umidade e temperatura
+# 	 #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
+# 	 #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
+# 	    grau= u'\N{DEGREE SIGN}'
+# 	    tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
+# 	    umid2 = "Umidade do ar: 75%"
             
-	  if self.tempamb != tempamb2:
-		  self.tempamb = tempamb2
-		  self.tempamblbl.config(text=tempamb2)
+# 	    if self.tempamb != tempamb2:
+# 		  self.tempamb = tempamb2
+# 		  self.tempamblbl.config(text=tempamb2)
 
-	  if self.umid != umid2:
-		  self.umid = umid2
-		  self.umidlbl.config(text=umid2)
+# 	    if self.umid != umid2:
+# 		  self.umid = umid2
+# 		  self.umidlbl.config(text=umid2)
                 
-	except Exception as e:
-		#traceback.print_exc()
-		print "Error: %s. Cannot get sensor." % e
+# 	except Exception as e:
+# 		#traceback.print_exc()
+# 		print "Error: %s. Cannot get sensor." % e
 
 
 class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
@@ -644,8 +676,8 @@ class FullscreenWindow:
         self.noticias = Noticias(self.bottomFrame)
         self.noticias.pack(side=LEFT, anchor=S, padx=10, pady=60)
         #sensor
-        self.sensor = Sensor(self.centerFrame)
-        self.sensor.pack(side=LEFT, anchor=N, padx=10, pady=10)
+        #self.sensor = Sensor(self.centerFrame)
+        #self.sensor.pack(side=LEFT, anchor=N, padx=10, pady=10)
         #rotas
         self.rotas = Rotas(self.bottomFrame)
         self.rotas.pack(side=RIGHT, anchor=S, padx=10, pady=60)
@@ -673,38 +705,37 @@ class FullscreenWindow:
             self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
             #self.rotas.get_url(1)
-	    
-	if aux.change_prof == 3:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
-	    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
-	    #self.rotas.get_url(3) 
-	if aux.change_prof == 4:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
-	    self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
-	    #self.rotas.get_url(4) 
-	if aux.change_prof == 5:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Jacinto Favoretto 230"
-	    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
-	    #self.rotas.get_url(5) 
-	if aux.change_prof == 6:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Avenida Sao Carlos 1200"
-	    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
-	    #self.rotas.get_url(6) 
-	if aux.change_prof == 7:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
-	    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
-	    #self.rotas.get_url(7) 
-	if aux.change_prof == 8:
-	    #self.rotas.widgetRota.destroy()
-	    self.rotas.destination = "Episcopal 640"
-	    self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
-	    #self.rotas.get_url(8) 
-            aux.change_prof = 0
+	    if aux.change_prof == 3:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
+	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
+	        #self.rotas.get_url(3) 
+	    if aux.change_prof == 4:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
+	        self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
+	        #self.rotas.get_url(4) 
+	    if aux.change_prof == 5:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Jacinto Favoretto 230"
+	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
+	        #self.rotas.get_url(5) 
+	    if aux.change_prof == 6:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Avenida Sao Carlos 1200"
+	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
+	        #self.rotas.get_url(6) 
+	    if aux.change_prof == 7:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
+	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
+	        #self.rotas.get_url(7) 
+	    if aux.change_prof == 8:
+	        #self.rotas.widgetRota.destroy()
+	        self.rotas.destination = "Episcopal 640"
+	        self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
+	        #self.rotas.get_url(8) 
+        aux.change_prof = 0
         self.rotas.get_url()
         self.noticias.get_manchete()            
         return "break"
@@ -730,9 +761,9 @@ class FullscreenWindow:
         self.clock.d_of_wlbl.configure(fg=aux.color)
         self.clock.datelbl.configure(fg=aux.color)
         self.noticias.get_manchete()
-	self.sensor.sensorlbl.configure(fg=aux.color)
-	self.sensor.tempamblbl.configure(fg=aux.color)
-	self.sensor.umidlbl.configure(fg=aux.color)
+	    # self.sensor.sensorlbl.configure(fg=aux.color)
+	    # self.sensor.tempamblbl.configure(fg=aux.color)
+	    # self.sensor.umidlbl.configure(fg=aux.color)
         return "break"
 
 if __name__ == '__main__':
