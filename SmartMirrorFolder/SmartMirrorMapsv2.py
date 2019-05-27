@@ -153,41 +153,41 @@ class Weather(Frame): #Frame: elemento principal
         self.locallbl["bg"] = ("black")
         self.locallbl["fg"] = ("white")
         self.locallbl.pack(side=TOP, anchor=W)
-
-	    self.tempamblbl = Label(self, text=self.titulo)
-	    self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
-	    self.tempamblbl["bg"] = "black"
-	    self.tempamblbl["fg"] = "white"
+        
+        self.tempamblbl = Label(self, text=self.tempamb)
+        self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
+        self.tempamblbl["bg"] = "black"
+        self.tempamblbl["fg"] = "white"
         self.tempamblbl.pack(side=TOP, anchor=W)
-
-	    self.umidlbl = Label(self, text=self.titulo)
-	    self.umidlbl["font"] = ("Helvetica", texto_pequeno)
-	    self.umidlbl["bg"] = "black"
-	    self.umidlbl["fg"] = "white"
+        
+        self.umidlbl = Label(self, text=self.umid)
+        self.umidlbl["font"] = ("Helvetica", texto_pequeno)
+        self.umidlbl["bg"] = "black"
+        self.umidlbl["fg"] = "white"
         self.umidlbl.pack(side=TOP, anchor=W)
 
-	    try: 
-	        #faz leitura do sensor de temperatura e umidade
-	        #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
- 
-	        #formata string de umidade e temperatura
-	        #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
-	        #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
-	        grau= u'\N{DEGREE SIGN}'
-	        tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
-	        umid2 = "Umidade do ar: 75%"
-            
-	        if self.tempamb != tempamb2:
-		        self.tempamb = tempamb2
-		        self.tempamblbl.config(text=tempamb2)
+        try: 
+            #faz leitura do sensor de temperatura e umidade
+            #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
 
-	        if self.umid != umid2:
-		        self.umid = umid2
-		        self.umidlbl.config(text=umid2)
-                
-	    except Exception as e:
-		    #traceback.print_exc()
-		    print "Error: %s. Cannot get sensor." % e
+            #formata string de umidade e temperatura
+            #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
+            #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
+            grau= u'\N{DEGREE SIGN}'
+            tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
+            umid2 = "Umidade do ar: 75%"
+
+            if self.tempamb != tempamb2:
+                self.tempamb = tempamb2
+                self.tempamblbl.config(text=tempamb2)
+
+            if self.umid != umid2:
+                self.umid = umid2
+                self.umidlbl.config(text=umid2)
+            
+        except Exception as e:
+            #traceback.print_exc()
+            print "Error: %s. Cannot get sensor." % e
 
 
         self.get_weather()
@@ -320,74 +320,74 @@ class Noticias(Frame):
                 widget.destroy()
 
             if aux.change_prof == 0:
-	    	    self.titulo = "Ultimas Noticias"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
+                self.titulo = "Ultimas Noticias"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
             if aux.change_prof == 1:
-		        self.titulo = "Principais Noticias"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)            	
+                self.titulo = "Principais Noticias"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)            	
             if aux.change_prof == 2:
-            	self.titulo = "Tecnologia"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
+                self.titulo = "Tecnologia"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
 
-	        if aux.change_prof == 3:
-	    	    self.titulo = "Economia"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
- 
-	        if aux.change_prof == 4:
-	    	    self.titulo = "Esportes"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
- 
-	        if aux.change_prof == 5:
-	    	    self.titulo = "Jogos"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
- 
-	        if aux.change_prof == 6:
-	    	    self.titulo = "Cinema"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
- 
-	        if aux.change_prof == 7:
-	    	    self.titulo = "Vestibular"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
- 
-	        if aux.change_prof == 8:
-	    	    self.titulo = "Musica"
-            	self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-            	self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-            	self.noticiaslbl["bg"] = "black"
-            	self.noticiaslbl["fg"] = "white"
-            	self.noticiaslbl.pack(side=TOP, anchor=W)
+            if aux.change_prof == 3:
+                self.titulo = "Economia"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            if aux.change_prof == 4:
+                self.titulo = "Esportes"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            if aux.change_prof == 5:
+                self.titulo = "Jogos"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            if aux.change_prof == 6:
+                self.titulo = "Cinema"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            if aux.change_prof == 7:
+                self.titulo = "Vestibular"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
+
+            if aux.change_prof == 8:
+                self.titulo = "Musica"
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
+                self.noticiaslbl["bg"] = "black"
+                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl.pack(side=TOP, anchor=W)
             aux.change_prof = 0    
             feed = feedparser.parse(self.manchetes_url)
 
