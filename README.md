@@ -2,8 +2,11 @@
 # Sistemas Embarcados - USP São Carlos
 Apresentado por:
   Cainan Colaço Brunhera
+  
   Fernando Santurbano Tavares Simas
+  
   Gabriel Maurício Marques
+  
   Leonardo Luís da Silva
   
 # Instalando bibliotecas
@@ -49,4 +52,21 @@ Agora já estamos quase prontos para instalar as bibliotecas, porém para isso p
   connmanctl> quit
 
 Note que quando você digitar o comando services aparecerão todas as redes wifi disponíveis, então basta você escolher uma para se conectar. Se você não usar a BeagleBoneWireless, pode conectar-se usando um cabo de rede.
-Com a placa conectada a internet, agora iniciaremos o processo de instalação das bibliotecas.
+
+Antes de iniciar a instalação das bibliotecas, você deve clonar esse repositório em sua máquina, para isso acesse o local de sua preferência e execute o comando:
+
+	git clone https://github.com/Simas1997/SmartMirror.git
+
+Com a placa conectada a internet, agora iniciaremos o processo de instalação das bibliotecas. Para isso, precisamos inicialmente instalar o pip, então digite os seguintes comandos no seu terminal:
+
+	sudo apt-get update
+
+	sudo apt-get install python-pip
+	
+Agora, realizaremos a instalação das bibliotecas utilizadas no projeto.Para isso, execute os seguintes comandos no seu terminal:
+
+	sudo apt-get install python-tk
+	
+	sudo pip install -r requirements.txt
+	
+	sudo pip install -U googlemaps
