@@ -1,25 +1,29 @@
 from Tkinter import *
 
-#import Adafruit_DHT
+import Adafruit_DHT
+import Adafruit_BBIO.GPIO as GPIO
 import requests
 import json
 import feedparser
-#import traceback
 import googlemaps
+import time
 
 from datetime import datetime
 
 from PIL import Image, ImageTk
 
 #configuracao do sensor de temperatura utilizado (DHT22)
-#sensor = Adafruit_DHT.DHT22
+sensor = Adafruit_DHT.DHT22
 #configuracao do pino de leitura do sensor de temperatura
-#pin = 'P8_11'
+pin = 'P8_11'
+
+GPIO.setup("P8_12", GPIO.IN)
+GPIO.setup("P8_14", GPIO.IN)
 
 class aux():
-    pushbutton=0
+    pushbutton = 0
     color ="white"
-    change_prof=0
+    change_prof = 0
 
 
 weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96'
@@ -109,9 +113,8 @@ class Clock(Frame):
         if date2 != self.date1:
                 self.date1 = date2
                 self.datelbl.config(text=date2)
-
-	self.timelbl.after(200, self.att)
-
+        
+        self.timelbl.after(200, self.att)
 
 
 
@@ -157,26 +160,23 @@ class Weather(Frame): #Frame: elemento principal
         self.tempamblbl = Label(self, text=self.tempamb)
         self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
         self.tempamblbl["bg"] = "black"
-        self.tempamblbl["fg"] = "white"
+        self.tempamblbl["fg"] = aux.color
         self.tempamblbl.pack(side=TOP, anchor=W)
         
         self.umidlbl = Label(self, text=self.umid)
         self.umidlbl["font"] = ("Helvetica", texto_pequeno)
         self.umidlbl["bg"] = "black"
-        self.umidlbl["fg"] = "white"
+        self.umidlbl["fg"] = aux.color
         self.umidlbl.pack(side=TOP, anchor=W)
 
         try: 
             #faz leitura do sensor de temperatura e umidade
-            #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
+            humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
             #formata string de umidade e temperatura
-            #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
-            #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
+            umid2 = "Umidade do ar: {0:0.1f}%".format(humidity)
             grau= u'\N{DEGREE SIGN}'
-            tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
-            umid2 = "Umidade do ar: 75%"
-
+            tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperature) % (grau)
             if self.tempamb != tempamb2:
                 self.tempamb = tempamb2
                 self.tempamblbl.config(text=tempamb2)
@@ -214,8 +214,7 @@ class Weather(Frame): #Frame: elemento principal
             ip_json = json.loads(req.text) # json eh uma biblioteca propria para trabalhar com dados do Json
             return ip_json['ip']
         except Exception as e:	#exception as e: da para acessar o conteudo do obejto exception = e
-            #traceback.print_exc() #printa um cabecalho com as ultimas funcoes chamadas, printa a exception (e) e o valor, se (e) e um erro de sintaxe e o valor esta no formato adequado, ele printa a linha onde o erro aconteceu
-            return "Error: %s. Cannot get ip." % e
+           return "Error: %s. Cannot get ip." % e
 
     def get_weather(self):
         try:
@@ -298,14 +297,7 @@ class Noticias(Frame):
         
         self.manchetes = Frame(self, bg="black")
         self.manchetes.pack(side=TOP)
-
-        # self.titulo = "Noticias"
-        # self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-        # self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-        # self.noticiaslbl["bg"] = "black"
-        # self.noticiaslbl["fg"] = "white"
-        # self.noticiaslbl.pack(side=TOP, anchor=W)
-        
+       
 	
 	self.manchetes_url = "http://rss.uol.com.br/feed/noticias.xml" #ultimasnoticias
 
@@ -324,21 +316,21 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
             if aux.change_prof == 1:
                 self.titulo = "Principais Noticias"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)            	
             if aux.change_prof == 2:
                 self.titulo = "Tecnologia"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 3:
@@ -346,7 +338,7 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 4:
@@ -354,7 +346,7 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 5:
@@ -362,7 +354,7 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 6:
@@ -370,7 +362,7 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 7:
@@ -378,7 +370,7 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
             if aux.change_prof == 8:
@@ -386,9 +378,9 @@ class Noticias(Frame):
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = "white"
+                self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
-            aux.change_prof = 0    
+                aux.change_prof = 0    
             feed = feedparser.parse(self.manchetes_url)
 
             for post in feed.entries[0:5]:
@@ -421,61 +413,6 @@ class Manchetes_foto(Frame):
         self.eventNamelbl["bg"] = "black"
         self.eventNamelbl["fg"] = aux.color
         self.eventNamelbl.pack(side=LEFT, anchor=N)
-
-# class Sensor(Frame):
-
-#     def __init__(self, master = None):
-#         Frame.__init__(self, master, bg='black')
-
-#         self.tempamb = ''
-#         self.umid = ''
-
-#         self.titulo = " "
-
-#         self.widgetSensor = Frame(self)
-#         self.widgetSensor["bg"] = ("black")
-#         self.widgetSensor.pack(side=TOP, anchor=N)
-
-#         self.sensorlbl = Label(self.widgetSensor, text=self.titulo)
-#         self.sensorlbl["font"] = ("Helvetica", texto_pequeno)
-#         self.sensorlbl["bg"] = "black"
-#         self.sensorlbl["fg"] = "white"
-#         self.sensorlbl.pack(side=TOP, anchor=W)
-
-# 	    self.tempamblbl = Label(self, text=self.titulo)
-# 	    self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
-# 	    self.tempamblbl["bg"] = "black"
-# 	    self.tempamblbl["fg"] = "white"
-#         self.tempamblbl.pack(side=TOP, anchor=W)
-
-# 	    self.umidlbl = Label(self, text=self.titulo)
-# 	    self.umidlbl["font"] = ("Helvetica", texto_pequeno)
-# 	    self.umidlbl["bg"] = "black"
-# 	    self.umidlbl["fg"] = "white"
-#         self.umidlbl.pack(side=TOP, anchor=W)
-
-# 	try: 
-# 	 #faz leitura do sensor de temperatura e umidade
-# 	 #umidade, temperatura = Adafruit_DHT.read_retry(sensor, pin)
- 
-# 	 #formata string de umidade e temperatura
-# 	 #umid2 = "Umidade do ar: {0:0.1f}".format(umidade) 
-# 	 #tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperatura) % (grau)
-# 	    grau= u'\N{DEGREE SIGN}'
-# 	    tempamb2 = "Temperatura ambiente: 20%sC" % (grau)
-# 	    umid2 = "Umidade do ar: 75%"
-            
-# 	    if self.tempamb != tempamb2:
-# 		  self.tempamb = tempamb2
-# 		  self.tempamblbl.config(text=tempamb2)
-
-# 	    if self.umid != umid2:
-# 		  self.umid = umid2
-# 		  self.umidlbl.config(text=umid2)
-                
-# 	except Exception as e:
-# 		#traceback.print_exc()
-# 		print "Error: %s. Cannot get sensor." % e
 
 
 class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
@@ -544,7 +481,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.rotaslbl = Label(self.widgetRota, text = self.titulo)
         self.rotaslbl["font"] = ("Helvetica", texto_medio)
         self.rotaslbl["bg"] = "black"
-        self.rotaslbl["fg"] = "white"
+        self.rotaslbl["fg"] = aux.color
         self.rotaslbl.pack(side=TOP, anchor=W)
         self.get_rota()
         self.after(600000, self.get_url)
@@ -591,7 +528,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.destinolbl = Label(self.destline, text = self.destino, wraplength = 400)
         self.destinolbl["font"] = ("Helvetica", 12)
         self.destinolbl["bg"] = "black"
-        self.destinolbl["fg"] = "white"
+        self.destinolbl["fg"] = aux.color
         self.destinolbl.pack(side=LEFT, anchor=W)
 
         self.dist = self.map_obj['routes'][0]['legs'][0]['distance']['text']
@@ -599,7 +536,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.distlbl = Label(self.destline, text = self.dist_str)
         self.distlbl["font"] = ("Helvetica", texto_pp)
         self.distlbl["bg"] = "black"
-        self.distlbl["fg"] = "white"
+        self.distlbl["fg"] = aux.color
         self.distlbl.pack(side=LEFT, anchor=W)
         
 
@@ -610,7 +547,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.time_estlbl = Label(self.destline, text = self.tempo_est_str)
         self.time_estlbl["font"] = ("Helvetica", texto_pp)
         self.time_estlbl["bg"] = "black"
-        self.time_estlbl["fg"] = "white"
+        self.time_estlbl["fg"] = aux.color
         self.time_estlbl.pack(side=LEFT, anchor=W)
 
 
@@ -628,7 +565,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.steplbl = Label(self.stepline, text = self.step, wraplength = 400)
         self.steplbl["font"] = ("Helvetica", texto_pp)
         self.steplbl["bg"] = "black"
-        self.steplbl["fg"] = "white"
+        self.steplbl["fg"] = aux.color
         self.steplbl.pack(side=LEFT, anchor=W)
 
         self.step_dist = self.step_['distance']['text']
@@ -636,7 +573,7 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.step_distlbl = Label(self.stepline, text = self.step_dist_str)
         self.step_distlbl["font"] = ("Helvetica", texto_pp)
         self.step_distlbl["bg"] = "black"
-        self.step_distlbl["fg"] = "white"
+        self.step_distlbl["fg"] = aux.color
         self.step_distlbl.pack(side=LEFT, anchor=W)
 
         self.step_temp = self.step_['duration']['text']
@@ -646,10 +583,10 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
         self.step_templbl = Label(self.stepline, text = self.step_temp_str)
         self.step_templbl["font"] = ("Helvetica", texto_pp)
         self.step_templbl["bg"] = "black"
-        self.step_templbl["fg"] = "white"
+        self.step_templbl["fg"] = aux.color
         self.step_templbl.pack(side=LEFT, anchor=W)
-
-
+    
+	
 class FullscreenWindow:
 
     def __init__(self):
@@ -664,8 +601,8 @@ class FullscreenWindow:
         self.state = False
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
-        self.tk.bind("<space>", self.changeColor)
-        self.tk.bind("<p>", self.changeProfile)
+        #self.tk.bind("<space>", self.changeColor)
+        #self.tk.bind("<p>", self.changeProfile)
         # clock
         self.clock = Clock(self.topFrame)
         self.clock.pack(side=RIGHT, anchor=N, padx=10, pady=10)
@@ -682,6 +619,8 @@ class FullscreenWindow:
         self.rotas = Rotas(self.bottomFrame)
         self.rotas.pack(side=RIGHT, anchor=S, padx=10, pady=60)
 
+        self.gpio()
+
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  # Just toggling the boolean
         self.tk.attributes("-fullscreen", self.state)
@@ -691,64 +630,66 @@ class FullscreenWindow:
         self.state = False
         self.tk.attributes("-fullscreen", False)
         return "break"
+
     
-    def changeProfile(self, event=None):
-        aux.change_prof = aux.change_prof + 1 #logica de apertar o botao p
-        #self.rotas.widgetRota.destroy()
+         
+    def my_callback_one(self, event=None):
+        aux.change_prof = aux.change_prof + 1
         if aux.change_prof == 1:
-            #self.rotas.widgetRota.destroy()
+    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Joao Carbonari Junior 64"
             self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias 
-            #self.rotas.get_url(2) 
+    #self.rotas.get_url(2) 
         if aux.change_prof == 2:
-            #self.rotas.widgetRota.destroy()
+    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
-            #self.rotas.get_url(1)
-	    if aux.change_prof == 3:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
-	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
-	        #self.rotas.get_url(3) 
-	    if aux.change_prof == 4:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
-	        self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
-	        #self.rotas.get_url(4) 
-	    if aux.change_prof == 5:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Jacinto Favoretto 230"
-	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
-	        #self.rotas.get_url(5) 
-	    if aux.change_prof == 6:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Avenida Sao Carlos 1200"
-	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
-	        #self.rotas.get_url(6) 
-	    if aux.change_prof == 7:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
-	        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
-	        #self.rotas.get_url(7) 
-	    if aux.change_prof == 8:
-	        #self.rotas.widgetRota.destroy()
-	        self.rotas.destination = "Episcopal 640"
-	        self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
-	        #self.rotas.get_url(8) 
-        aux.change_prof = 0
+    #self.rotas.get_url(1)
+        if aux.change_prof == 3:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
+            self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
+    #self.rotas.get_url(3) 
+        if aux.change_prof == 4:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
+            self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
+    #self.rotas.get_url(4) 
+        if aux.change_prof == 5:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Jacinto Favoretto 230"
+            self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
+    #self.rotas.get_url(5) 
+        if aux.change_prof == 6:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Avenida Sao Carlos 1200"
+            self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
+    #self.rotas.get_url(6) 
+        if aux.change_prof == 7:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
+            self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
+    #self.rotas.get_url(7) 
+        if aux.change_prof == 8:
+    #self.rotas.widgetRota.destroy()
+            self.rotas.destination = "Episcopal 640"
+            self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
+    #self.rotas.get_url(8) 
+            aux.change_prof = 0
         self.rotas.get_url()
-        self.noticias.get_manchete()            
-        return "break"
+        self.noticias.get_manchete()
+        
 
+       
 
-    def changeColor(self, event=None):
-        aux.pushbutton = aux.pushbutton+1
+    def my_callback_two(self, event=None):
+        aux.pushbutton = aux.pushbutton + 1
         if aux.pushbutton == 0:
             aux.color = "white"
         if aux.pushbutton == 1:
             aux.color = "red"
         if aux.pushbutton == 2:
-            aux.color = "blue"
+            aux.color = "green"
         if aux.pushbutton == 3:
             aux.color = "yellow"
             aux.pushbutton = -1
@@ -758,15 +699,98 @@ class FullscreenWindow:
         self.weather.atuallbl.configure(fg=aux.color)
         self.weather.prevlbl.configure(fg=aux.color)
         self.weather.locallbl.configure(fg=aux.color)
+        self.weather.tempamblbl.configure(fg=aux.color)
+        self.weather.umidlbl.configure(fg=aux.color)
         self.clock.d_of_wlbl.configure(fg=aux.color)
         self.clock.datelbl.configure(fg=aux.color)
+        self.rotas.rotaslbl.configure(fg=aux.color)
+        self.rotas.get_url()
         self.noticias.get_manchete()
+        
+        
+    def gpio(self, event=None):       
+        GPIO.add_event_detect("P8_12", GPIO.RISING, callback = self.my_callback_one)
+        GPIO.add_event_detect("P8_14", GPIO.RISING, callback = self.my_callback_two)
+
+
+    
+    #def changeProfile(self, event=None):
+        
+        #self.rotas.widgetRota.destroy()
+        #    if aux.change_prof == 1:
+            #self.rotas.widgetRota.destroy()
+        #    self.rotas.destination = "Joao Carbonari Junior 64"
+        #    self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias 
+            #self.rotas.get_url(2) 
+        #if aux.change_prof == 2:
+            #self.rotas.widgetRota.destroy()
+        #    self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
+        #    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
+            #self.rotas.get_url(1)
+	#    if aux.change_prof == 3:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
+	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
+	        #self.rotas.get_url(3) 
+	#    if aux.change_prof == 4:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
+	#        self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
+	        #self.rotas.get_url(4) 
+	#    if aux.change_prof == 5:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Jacinto Favoretto 230"
+	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
+	        #self.rotas.get_url(5) 
+	#    if aux.change_prof == 6:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Avenida Sao Carlos 1200"
+	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
+	        #self.rotas.get_url(6) 
+	#    if aux.change_prof == 7:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
+	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
+	        #self.rotas.get_url(7) 
+	#    if aux.change_prof == 8:
+	        #self.rotas.widgetRota.destroy()
+	#        self.rotas.destination = "Episcopal 640"
+	#        self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
+	        #self.rotas.get_url(8) 
+        #aux.change_prof = 0
+        #self.rotas.get_url()
+        #self.noticias.get_manchete()            
+        #return "break"
+
+
+    #def changeColor(self, event=None):
+    #    aux.pushbutton = aux.pushbutton+1
+    #    if aux.pushbutton == 0:
+    #        aux.color = "white"
+    #    if aux.pushbutton == 1:
+    #        aux.color = "red"
+    #    if aux.pushbutton == 2:
+    #        aux.color = "blue"
+    #    if aux.pushbutton == 3:
+    #        aux.color = "yellow"
+    #        aux.pushbutton = -1
+    #    self.clock.timelbl.configure(fg=aux.color)
+    #    self.noticias.noticiaslbl.configure(fg=aux.color)
+    #    self.weather.templbl.configure(fg=aux.color)
+    #    self.weather.atuallbl.configure(fg=aux.color)
+    #    self.weather.prevlbl.configure(fg=aux.color)
+    #    self.weather.locallbl.configure(fg=aux.color)
+    #    self.clock.d_of_wlbl.configure(fg=aux.color)
+    #    self.clock.datelbl.configure(fg=aux.color)
+    #    self.noticias.get_manchete()
 	    # self.sensor.sensorlbl.configure(fg=aux.color)
 	    # self.sensor.tempamblbl.configure(fg=aux.color)
 	    # self.sensor.umidlbl.configure(fg=aux.color)
-        return "break"
+     #   return "break"
 
+    
 if __name__ == '__main__':
     w = FullscreenWindow()
+    print "a"
     w.tk.mainloop()
-
+        
