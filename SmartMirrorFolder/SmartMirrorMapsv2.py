@@ -1,7 +1,7 @@
-from Tkinter import *
+from Tkinter import * #Importar biblioteca grafica TK Inter
 
-import Adafruit_DHT
-import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_DHT #Importar biblioteca Adafruit_DHT para trabalhar com o sensor DHT22
+import Adafruit_BBIO.GPIO as GPIO #Importar biblioteca Adafruit_BBIO.GPIO para trabalhar com os botões
 import requests
 import json
 import feedparser
