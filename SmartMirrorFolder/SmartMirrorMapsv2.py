@@ -2,15 +2,16 @@ from Tkinter import * #Importar biblioteca grafica TK Inter
 
 import Adafruit_DHT #Importar biblioteca Adafruit_DHT para trabalhar com o sensor DHT22
 import Adafruit_BBIO.GPIO as GPIO #Importar biblioteca Adafruit_BBIO para trabalhar com os botões
-import requests
+import requests 
 import json
 import feedparser
-import googlemaps
-import time
+import googlemaps #Importar biblioteca para obter as rotas
+import time #Importar biblioteca do tempo
 
-from datetime import datetime
+from datetime import datetime #Importar biblioteca para trabalhar com horas
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk #PIL eh uma biblioteca de manipulação de imagens para o Python
+			       #ImageTk eh um modulo que contem o suporte para criar e modificar objetos TkInter
 
 #configuracao do sensor de temperatura utilizado (DHT22)
 sensor = Adafruit_DHT.DHT22
@@ -25,11 +26,12 @@ class aux():
     color ="white"
     change_prof = 0
 
-
-weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96'
-weather_lang = 'pt'
-weather_unit = 'si'
-latitude = None
+#Caro usuario, nesse momento voce deve criar um token para poder captar as informações de previsao do tempo.
+#Recomendamos o site darksky.net, apos a criacao basta substituir o token abaixo pelo seu token criado. 
+weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token, pelo seu token
+weather_lang = 'pt' #definicao da linguagem utilizada
+weather_unit = 'si' #definicao do sistema de medidas utilizado
+latitude = None 	
 longitude = None
 texto_gg = 94
 texto_grande = 48
