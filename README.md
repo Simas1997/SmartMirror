@@ -98,6 +98,8 @@ Com todos estes materiais, monte o circuito como o da imagem a seguir:
 
 *imagemimagemimagem*
 
+Fique atento às portas utilizadas na BBB, além do GND e do VCC 3.3V, utilizamos a porta P8_11 para o sensor e as portas P8_12 e P8_14 para os botões.
+
 Note que um botão será destinado a mudança de cor dos caracteres enquanto o outro será para a mudança de perfis.
 
 Confira todas as ligações feitas no circuito e se estiver tudo certo, sigamos para o próximo passo: rodar o programa.
