@@ -1,6 +1,7 @@
 # SmartMirror
 # Sistemas Embarcados - USP São Carlos
 Apresentado por:
+  
   Cainan Colaço Brunhera
   
   Fernando Santurbano Tavares Simas
@@ -26,7 +27,7 @@ Agora já estamos quase prontos para instalar as bibliotecas, porém para isso p
   
   connmanctl> services
   
-  * AO TNCAPA97AB9 wifi_506583d4fc5e_544e434150413937414239_managed_psk
+  AO TNCAPA97AB9 wifi_506583d4fc5e_544e434150413937414239_managed_psk
   wifi_506583d4fc5e_hidden_managed_psk
   
   DIRECT-roku-876 wifi_506583d4fc5e_4449524543542d726f6b752d383736_managed_psk
@@ -70,3 +71,51 @@ Agora, realizaremos a instalação das bibliotecas utilizadas no projeto.Para is
 	sudo pip install -r requirements.txt
 	
 	sudo pip install -U googlemaps
+	
+	sudo pip install pil
+	
+	sudo pip install Pillow
+	
+	sudo pip install Adafruit_DHT
+	
+	sudo pip install Adafruit_BBIO
+	
+Terminada a instalação das bibliotecas, vamos agora montar o circuito necessário para rodar o programa.
+
+# Montagem do circuito
+
+Para montar o circuito deste projeto, você precisará de:
+
+* Uma protoboard;
+
+* Dois resistores de 1K;
+
+* Dois botões (*push button*);
+
+* Um sensor DHT22 de temperatura e umidade.
+
+Com todos estes materiais, monte o circuito como o da imagem a seguir:
+
+*imagemimagemimagem*
+
+Note que um botão será destinado a mudança de cor dos caracteres enquanto o outro será para a mudança de perfis.
+
+Confira todas as ligações feitas no circuito e se estiver tudo certo, sigamos para o próximo passo: rodar o programa.
+
+# Rodando o programa
+
+Para executar o programa, vá até a pasta onde você clonou o repositório (use o comando *cd*). Então execute os seguintes comandos:
+
+	cd SmartMirror
+	
+	cd SmartMirrorFolder
+	
+Agora já estamos na pasta onde está salvo o programa, então para rodar o programa basta executar o seguinte comando:
+
+	sudo python SmartMirrorFinal.py
+	
+Aguarde alguns segundos e então você verá a seguinte tela:
+
+*imagemimagemimagem*
+
+Para encerrar, gostaria de convidá-los a assistir nosso vídeo, onde explicamos com mais detalhes o projeto: *linkdovídeo*
