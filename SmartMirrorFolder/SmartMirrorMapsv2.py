@@ -29,33 +29,35 @@ class aux():
 
 #Caro usuário, nesse momento você deve criar um token para poder captar as informações de previsão do tempo
 #Recomendamos o site darksky.net, após acessá-lo basta clicar em Dark Sky API, se registrar e obter seu próprio token 
-weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token, pelo seu token criado
-weather_lang = 'pt' #Definição da linguagem utilizada
-weather_unit = 'si' #Definição do sistema de medidas utilizado
-latitude = None #Definindo latitude como nula	
-longitude = None #Definindo longitude como nula
-#Defindo tamanho das letras a serem utilizadas:
+weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token pelo seu token criado
+#O usuário pode definir a latitude e longitude manualmente ou pegá-las pelo IP. Caso for adquirir as informações com base no IP,
+#é necessário utilizar uma API, para isso sugerimos o site: ipstack.com, basta se registar, garantir seu token e substituir na
+#variável abaixo com nome ip_token. (Obs.: Utilizamos o ip para obter as informações de localização)
+ip_token = '33a23fcdf35dc1446075208d4461cfec' #Substitua esse token pelo seu token criado
+latitude = None #Definindo latitude como nula (para usar o IP)	
+longitude = None #Definindo longitude como nula (para usar o IP)
+#Definindo o tamanho das letras a serem utilizadas:
 texto_gg = 94
 texto_grande = 48
 texto_medio = 28
 texto_pequeno = 10
 texto_pp = 10
 
-#Atribuindo as imagens as respectivas variáveis:
+#Atribuindo as imagens às respectivas variáveis:
 pic_lookup = {
-    'clear-day': "assets/Sun.png",  # clear sky day
-    'wind': "assets/Wind.png",   #wind
-    'cloudy': "assets/Cloud.png",  # cloudy day
-    'partly-cloudy-day': "assets/PartlySunny.png",  # partly cloudy day
-    'rain': "assets/Rain.png",  # rain day
-    'snow': "assets/Snow.png",  # snow day
-    'snow-thin': "assets/Snow.png",  # sleet day
-    'fog': "assets/Haze.png",  # fog day
-    'clear-night': "assets/Moon.png",  # clear sky night
-    'partly-cloudy-night': "assets/PartlyMoon.png",  # scattered clouds night
-    'thunderstorm': "assets/Storm.png",  # thunderstorm
-    'tornado': "assests/Tornado.png",    # tornado
-    'hail': "assests/Hail.png"  # hail
+    'clear-day': "assets/Sun.png",  # Limpo
+    'wind': "assets/Wind.png",   # Vento
+    'cloudy': "assets/Cloud.png",  # Lublado
+    'partly-cloudy-day': "assets/PartlySunny.png",  # Parcialmente nublado
+    'rain': "assets/Rain.png",  # Chuvoso
+    'snow': "assets/Snow.png",  # Neve
+    'snow-thin': "assets/Snow.png",  # Neve fina
+    'fog': "assets/Haze.png",  # Neblina
+    'clear-night': "assets/Moon.png",  # Noite limpa
+    'partly-cloudy-night': "assets/PartlyMoon.png",  # Noite parcialmente nublada
+    'thunderstorm': "assets/Storm.png",  # Tempestade de trovões
+    'tornado': "assests/Tornado.png",    # Tornado
+    'hail': "assests/Hail.png"  # Granizo
 }
 
 #Criar a classe abaixo para construir o label das horas
@@ -203,7 +205,7 @@ class Weather(Frame):
                 self.umid = umid2
                 self.umidlbl.config(text=umid2)
             
-        except Exception as e:
+        except Exception as e: #Exception as e: da para acessar o conteudo do objeto exception = e
             print "Error: %s. Cannot get sensor." % e
 
 
@@ -222,77 +224,85 @@ class Weather(Frame):
         self.piclbl["bg"] = ("black") #Definir cor do plano de fundo
         self.piclbl.pack(side=LEFT, anchor=N, padx=20) #Definir posicionamento e orientação
 
-
-
-
-    def get_ip(self):
+	
+    def get_ip(self): #Método para pegar o ip
         try:
-            ip_url = "http://jsonip.com/"
-            req = requests.get(ip_url) #request usado para obter informacoes de um site
-            ip_json = json.loads(req.text) # json eh uma biblioteca propria para trabalhar com dados do Json
-            return ip_json['ip']
-        except Exception as e:	#exception as e: da para acessar o conteudo do obejto exception = e
+            ip_url = "http://jsonip.com/" #Site usado para pegar o ip
+            req = requests.get(ip_url) #requests.get usado para obter as informações do site
+            ip_json = json.loads(req.text) # json.loads é uma função própria para carregar arquivos com strings
+            return ip_json['ip'] #Com a atribuição feita acima, ip_json virou uma espécie de dicionário e seus campos podem ser acessados como foi feito nesta linha
+        except Exception as e:	#Exception as e: da para acessar o conteudo do objeto exception = e
            return "Error: %s. Cannot get ip." % e
 
     def get_weather(self):
         try:
-
             if latitude is None and longitude is None:
-                # localizacao pelo ip
-                location_req_url = "http://api.ipstack.com/%s?access_key=33a23fcdf35dc1446075208d4461cfec" % self.get_ip()
-                r = requests.get(location_req_url)
-                location_obj = json.loads(r.text)
+                # Localização pelo IP
+                location_req_url = "http://api.ipstack.com/%s?access_key=%s" % (self.get_ip(), ip_token)
+                r = requests.get(location_req_url) #requests.get usado para obter as informações do site
+                location_obj = json.loads(r.text) #json.loads é uma função própria para carregar arquivos com strings
 
-                lat = location_obj['latitude']
-                lon = location_obj['longitude']
+                lat = location_obj['latitude'] # Acessando o campo de latitude
+                lon = location_obj['longitude'] # Acessando o campo de longitude
 
-                local2 = "%s, %s" % (location_obj['city'], location_obj['region_code'])
+                local2 = "%s, %s" % (location_obj['city'], location_obj['region_code']) #formatando a localização
 
-                # get weather
-                weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=%s&units=%s" % (weather_api_token, lat,lon,weather_lang,weather_unit) #tirar lang e unit
+                # Pegar o clima
+                weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=pt&units=si" % (weather_api_token, lat, lon)
             else:
-		#localizacao ja definida pelo usuario
+		#Localização já definida pelo usuário
                 local2 = ""
-                # get weather
-                weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=%s&units=%s" % (weather_api_token, latitude, longitude, weather_lang, weather_unit)
-
+                # Pegar o clima
+                weather_req_url = "https://api.darksky.net/forecast/%s/%s,%s?lang=pt&units=si" % (weather_api_token, latitude, longitude)
+	
+		#Captando informações do URL:
             r = requests.get(weather_req_url)
             weather_obj = json.loads(r.text)
+	
+            grau= u'\N{DEGREE SIGN}' #Símbolo de grau
+            temp2 = "%s%s" % (str(int(weather_obj['currently']['temperature'])), grau) #Formatando a temperatura
+            atual2 = weather_obj['currently']['summary'] #Acessando os campos para pegar condição atual do tempo
+            prev2 = weather_obj["hourly"]["summary"] #Acessando os campos para pegar a condição futura do tempo
 
-            grau= u'\N{DEGREE SIGN}'
-            temp2 = "%s%s" % (str(int(weather_obj['currently']['temperature'])), grau)
-            atual2 = weather_obj['currently']['summary']
-            prev2 = weather_obj["hourly"]["summary"]
-
-            pic_id = weather_obj['currently']['icon']
+            pic_id = weather_obj['currently']['icon'] #Acessando os campos para pegar a informação da figura
             pic2 = None
-
+		
+		#Inserindo figura
             if pic_id in pic_lookup:
                 pic2 = pic_lookup[pic_id]
 
             if pic2 is not None:
                 if self.pic != pic2:
+			#Atualizar a figura
                     self.pic = pic2
                     image = Image.open(pic2)
                     image = image.resize((100, 100), Image.ANTIALIAS)
                     image = image.convert('RGB')
                     photo = ImageTk.PhotoImage(image)
-
+		
+			#Atualizar o label
                     self.piclbl.config(image=photo)
                     self.piclbl.image = photo
             else:
-                # remover imagem
+                # Remover imagem
                 self.piclbl.config(image='')
-
+		
+		#Atualizar condição atual do tempo
             if self.atual != atual2:
                 self.atual = atual2
                 self.atuallbl.config(text=atual2)
+		
+		#Atualizar condição futura do tempo
             if self.prev != prev2:
                 self.prev = prev2
                 self.prevlbl.config(text=prev2)
+		
+		#Atualizar a temperatura
             if self.temp != temp2:
                 self.temp = temp2
                 self.templbl.config(text=temp2)
+		
+		#Atualizar a localização
             if self.local != local2:
                 if local2 == ", ":
                     self.local = "Cannot Pinpoint Location"
@@ -301,10 +311,9 @@ class Weather(Frame):
                     self.local = local2
                     self.locallbl.config(text=local2)
         except Exception as e:
-            #traceback.print_exc()
             print "Error: %s. Cannot get weather." % e
 
-        self.after(6000, self.get_weather)
+        self.after(6000, self.get_weather) #Executa novamente o método self.get_weather após 6000ms
 
 
 
