@@ -1,21 +1,22 @@
+# encoding: utf-8 #Usar caracteres especiais nos comentários
 from Tkinter import * #Importar biblioteca grafica TK Inter
 
 import Adafruit_DHT #Importar biblioteca Adafruit_DHT para trabalhar com o sensor DHT22
 import Adafruit_BBIO.GPIO as GPIO #Importar biblioteca Adafruit_BBIO para trabalhar com os botões
-import requests 
-import json
-import feedparser
+import requests #Importar requests para obter informação de um site
+import json #Importar a biblioteca json própria para trabalhar com dados no formato json
+import feedparser 
 import googlemaps #Importar biblioteca para obter as rotas
 import time #Importar biblioteca do tempo
 
-from datetime import datetime #Importar biblioteca para trabalhar com horas
+from datetime import datetime #Importar a classe datetime do módulo datetime para trabalhar com horas
 
 from PIL import Image, ImageTk #PIL eh uma biblioteca de manipulação de imagens para o Python
 			       #ImageTk eh um modulo que contem o suporte para criar e modificar objetos TkInter
 
-#configuracao do sensor de temperatura utilizado (DHT22)
+#Configuração do sensor de temperatura utilizado (DHT22)
 sensor = Adafruit_DHT.DHT22
-#configuracao do pino de leitura do sensor de temperatura
+#Configuração do pino de leitura do sensor de temperatura
 pin = 'P8_11'
 
 GPIO.setup("P8_12", GPIO.IN)
@@ -26,20 +27,21 @@ class aux():
     color ="white"
     change_prof = 0
 
-#Caro usuario, nesse momento voce deve criar um token para poder captar as informações de previsao do tempo.
-#Recomendamos o site darksky.net, apos a criacao basta substituir o token abaixo pelo seu token criado. 
-weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token, pelo seu token
-weather_lang = 'pt' #definicao da linguagem utilizada
-weather_unit = 'si' #definicao do sistema de medidas utilizado
-latitude = None 	
-longitude = None
+#Caro usuário, nesse momento você deve criar um token para poder captar as informações de previsão do tempo
+#Recomendamos o site darksky.net, após acessá-lo basta clicar em Dark Sky API, se registrar e obter seu próprio token 
+weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token, pelo seu token criado
+weather_lang = 'pt' #Definição da linguagem utilizada
+weather_unit = 'si' #Definição do sistema de medidas utilizado
+latitude = None #Definindo latitude como nula	
+longitude = None #Definindo longitude como nula
+#Defindo tamanho das letras a serem utilizadas:
 texto_gg = 94
 texto_grande = 48
 texto_medio = 28
 texto_pequeno = 10
 texto_pp = 10
 
-
+#Atribuindo as imagens as respectivas variáveis:
 pic_lookup = {
     'clear-day': "assets/Sun.png",  # clear sky day
     'wind': "assets/Wind.png",   #wind
@@ -56,44 +58,48 @@ pic_lookup = {
     'hail': "assests/Hail.png"  # hail
 }
 
-
-class Clock(Frame):
-    def __init__(self, master = None):
-        Frame.__init__(self, master)
-        self.widget = Frame(self)  #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget_clima
-        self.widget["bg"] = ("black")
-        self.widget.pack(side=TOP)
+#Criar a classe abaixo para construir o label das horas
+class Clock(Frame): #Frame é a classe pai
+    def __init__(self, master = None): # Definir o construtor da classe e inicializar o objeto self e seus atributos
+        Frame.__init__(self, master) #Chamar o construtor da classe pai
+        self.widget = Frame(self) #Criação de um atributo widget para o objeto self
+        self.widget["bg"] = ("black") #Definir a cor do plano de fundo para preto
+        self.widget.pack(side=TOP) #Posicionar o widget
 
 	        # Inicializar label de tempo
         self.time1 = ''
-        self.timelbl = Label(self.widget, text = self.time1)
-        self.timelbl["font"] = ("Helvetica", texto_grande)
-        self.timelbl["bg"] = ("black")
-        self.timelbl["fg"] = ("white")
-        self.timelbl.pack(side=TOP, anchor=E)
+        self.timelbl = Label(self.widget, text = self.time1) #Label é uma função do TkInter para exibir um widget, self.widget é o widget pai
+        self.timelbl["font"] = ("Helvetica", texto_grande) #Definir fonte e tamanho
+        self.timelbl["bg"] = ("black") #Definir cor do plano de fundo
+        self.timelbl["fg"] = ("white") #Definir cor da letra
+        self.timelbl.pack(side=TOP, anchor=E) #Posicionar o label
 
             # Inicializar label de dia da semana
+		#Mesma lógica do label de tempo
         self.d_of_w1 = ''
-        self.d_of_wlbl = Label(self.widget, text = self.d_of_w1)
+        self.d_of_wlbl = Label(self.widget, text = self.d_of_w1) 
         self.d_of_wlbl["font"] = ("Helvetica", texto_pequeno)
         self.d_of_wlbl["bg"] = ("black")
         self.d_of_wlbl["fg"] = ("white")
         self.d_of_wlbl.pack(side=TOP, anchor=E)
 
             # Inicializar label de data
+		#Mesma lógica do label de tempo e de dia da semana
         self.date1 = ''
         self.datelbl = Label(self.widget, text = self.date1)
         self.datelbl["font"] = ("Helvetica", texto_pequeno)
         self.datelbl["bg"] = ("black")
         self.datelbl["fg"] = ("white")
         self.datelbl.pack(side=TOP, anchor=E)
-        self.att()
+	
+        self.att() #Chamar o método att
 
     def att(self):
 
-	now = datetime.now()
-	time2 = now.strftime("%H:%M")
-	d_of_w2 = now.strftime("%A")
+	now = datetime.now() #Captar a hora e data atual
+	time2 = now.strftime("%H:%M") #Formatar o dado para pegar a hora em string
+	d_of_w2 = now.strftime("%A") #Formatar o dado para pegar os dias da semana em string
+	#Simples conversão para o pt-br:
 	if d_of_w2 == "Sunday":		d_of_w2 = "Domingo"
 	if d_of_w2 == "Saturday":	d_of_w2 = "Sabado"
 	if d_of_w2 == "Monday":		d_of_w2 = "Segunda-feira"
@@ -101,28 +107,29 @@ class Clock(Frame):
 	if d_of_w2 == "Wednesday":	d_of_w2 = "Quarta-feira"
 	if d_of_w2 == "Thursday":	d_of_w2 = "Quinta-feira"
 	if d_of_w2 == "Friday":		d_of_w2 = "Sexta-feira"
-	date2 = now.strftime("%d/%m/%Y")
+	date2 = now.strftime("%d/%m/%Y") #Formatar o dado para pegar a data em string
 
         # Verificar para atualizar
 	if time2 != self.time1:
         	self.time1 = time2
-                self.timelbl.config(text=time2)
+                self.timelbl.config(text=time2) #Atualizando o label com o valor atual
 
         if d_of_w2 != self.d_of_w1:
                 self.d_of_w1 = d_of_w2
-                self.d_of_wlbl.config(text=d_of_w2)
+                self.d_of_wlbl.config(text=d_of_w2) #Atualizando o label com o valor atual
 
         if date2 != self.date1:
                 self.date1 = date2
-                self.datelbl.config(text=date2)
+                self.datelbl.config(text=date2) #Atualizando o label com o valor atual
         
-        self.timelbl.after(200, self.att)
+        self.timelbl.after(200, self.att) #Define um tempo para atualizar novamente o label de horas
 
 
-
-class Weather(Frame): #Frame: elemento principal
+#Criação da classe Weather para captar as informações de previsão do tempo
+class Weather(Frame):
     def __init__(self, master = None):
-        Frame.__init__(self, master, bg='black') #construtor da classe base
+        Frame.__init__(self, master, bg='black')
+	#definição dos atributos necessários:
         self.temp = ''
         self.local = ''
         self.prev = ''
@@ -132,43 +139,49 @@ class Weather(Frame): #Frame: elemento principal
         self.umid = ''
 
 
-        self.widget_clima = Frame(self)  #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
-        self.widget_clima["bg"] = ("black")
-        self.widget_clima.pack(side=TOP, anchor=W)
-
-        self.widget_plot = Label(self.widget_clima)
-        self.widget_plot["bg"] = ("black")
-        self.plotClima()
-        self.widget_plot.pack(side=TOP, anchor=N)
-
-        self.atuallbl = Label(self.widget_clima)
-        self.atuallbl["font"] = ("Helvetica", texto_medio)
-        self.atuallbl["bg"] = ("black")
-        self.atuallbl["fg"] = ("white")
-        self.atuallbl.pack(side=TOP, anchor=W)
-
+        self.widget_clima = Frame(self) #Obs: Utilizar Frame(master) criaria um widget dominante na região impedindo a divisão de tela com o widget de horas
+        self.widget_clima["bg"] = ("black") #Definir cor do plano de fundo
+        self.widget_clima.pack(side=TOP, anchor=W) #Definir posionamento e orientação
+	
+	#Criação do label que contém a temperatura e a figura
+        self.widget_plot = Label(self.widget_clima) #Criação de um label filho de self.widget_clima
+        self.widget_plot["bg"] = ("black") #Definir cor do plano de fundo
+        self.plotClima() #Chamar o método encarregado de plotar a temperatura e sua figura
+        self.widget_plot.pack(side=TOP, anchor=N) #Definir posicionamento e orientação
+	
+	#Criação do label de condição atual do tempo
+        self.atuallbl = Label(self.widget_clima)  #Criação de um label filho de self.widget_clima
+        self.atuallbl["font"] = ("Helvetica", texto_medio) #Definir características da fonte
+        self.atuallbl["bg"] = ("black") #Definir cor do plano de fundo
+        self.atuallbl["fg"] = ("white") #Definir cor da letra
+        self.atuallbl.pack(side=TOP, anchor=W) #Definir o posicionamento e orientação
+	
+	#Criação do label de condição futura do tempo (estrutura semelhante a criada acima para a condição atual do tempo)
         self.prevlbl = Label(self.widget_clima)
         self.prevlbl["font"] = ("Helvetica", texto_pequeno)
         self.prevlbl["bg"] = ("black")
         self.prevlbl["fg"] = ("white")
         self.prevlbl.pack(side=TOP, anchor=W)
-
+	
+	#Criação do label de localização da previsão (estrutura semelhante a criada acima para a condição atual do tempo)
         self.locallbl = Label(self.widget_clima)
         self.locallbl["font"] = ("Helvetica", texto_pequeno)
         self.locallbl["bg"] = ("black")
         self.locallbl["fg"] = ("white")
         self.locallbl.pack(side=TOP, anchor=W)
         
+	#Criação do label de temperatura ambiente (estrutura semelhante a criada acima para a condição atual do tempo)
         self.tempamblbl = Label(self, text=self.tempamb)
         self.tempamblbl["font"] = ("Helvetica", texto_pequeno)
         self.tempamblbl["bg"] = "black"
-        self.tempamblbl["fg"] = aux.color
+        self.tempamblbl["fg"] = aux.color #Mudança da cor da letra
         self.tempamblbl.pack(side=TOP, anchor=W)
         
+	#Criação do label de umidade ambiente (estrutura semelhante a criada acima para a condição atual do tempo)
         self.umidlbl = Label(self, text=self.umid)
         self.umidlbl["font"] = ("Helvetica", texto_pequeno)
         self.umidlbl["bg"] = "black"
-        self.umidlbl["fg"] = aux.color
+        self.umidlbl["fg"] = aux.color #Mudança da cor da letra
         self.umidlbl.pack(side=TOP, anchor=W)
 
         try: 
@@ -179,32 +192,35 @@ class Weather(Frame): #Frame: elemento principal
             umid2 = "Umidade do ar: {0:0.1f}%".format(humidity)
             grau= u'\N{DEGREE SIGN}'
             tempamb2 = "Temperatura ambiente: {0:0.1f}%sC".format(temperature) % (grau)
+		
             if self.tempamb != tempamb2:
+		#Atualiza a temperatura ambiente
                 self.tempamb = tempamb2
                 self.tempamblbl.config(text=tempamb2)
 
             if self.umid != umid2:
+		#Atualiza a umidade ambiente
                 self.umid = umid2
                 self.umidlbl.config(text=umid2)
             
         except Exception as e:
-            #traceback.print_exc()
             print "Error: %s. Cannot get sensor." % e
 
 
-        self.get_weather()
+        self.get_weather() #Chamar método para fazer aquisição das informações
 
     def plotClima(self):
         
-        self.templbl = Label(self.widget_plot)
-        self.templbl["font"] = ("Helvetica", texto_gg)
-        self.templbl["bg"] = ("black")
-        self.templbl["fg"] = ("white")
-        self.templbl.pack(side=LEFT, anchor=N)
+	#Obs.: Foi necessário criar o método para fazer o posicionamento das informações no display conforme desejado
+        self.templbl = Label(self.widget_plot) #Criar um label filho de self.widget_plot
+        self.templbl["font"] = ("Helvetica", texto_gg) #Definir características de fonte
+        self.templbl["bg"] = ("black") #Definir cor do plano de fundo
+        self.templbl["fg"] = ("white") #Definir cor da letra
+        self.templbl.pack(side=LEFT, anchor=N) #Definir posicionamento e orientação
 
-        self.piclbl = Label(self.widget_plot)
-        self.piclbl["bg"] = ("black")
-        self.piclbl.pack(side=LEFT, anchor=N, padx=20)
+        self.piclbl = Label(self.widget_plot) #Criar um label filho de self.widget_plot
+        self.piclbl["bg"] = ("black") #Definir cor do plano de fundo
+        self.piclbl.pack(side=LEFT, anchor=N, padx=20) #Definir posicionamento e orientação
 
 
 
