@@ -118,6 +118,8 @@ Agora já estamos na pasta onde está salvo o programa, então para rodar o prog
 	
 Aguarde alguns segundos e então você verá a seguinte tela:
 
-*imagemimagemimagem*
+![WhatsApp Image 2019-06-05 at 13 42 44](https://user-images.githubusercontent.com/48104891/58976759-9a034980-879e-11e9-9ee2-644561c7756b.jpeg)
+
+Porém ela ainda não estará em tela cheia, para isso pressione *Enter* no teclado.
 
 Para encerrar, gostaria de convidá-los a assistir nosso vídeo, onde explicamos com mais detalhes o projeto: *linkdovídeo*
