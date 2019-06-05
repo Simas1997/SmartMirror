@@ -5,7 +5,7 @@ import Adafruit_DHT #Importar biblioteca Adafruit_DHT para trabalhar com o senso
 import Adafruit_BBIO.GPIO as GPIO #Importar biblioteca Adafruit_BBIO para trabalhar com os botões
 import requests #Importar requests para obter informação de um site
 import json #Importar a biblioteca json própria para trabalhar com dados no formato json
-import feedparser 
+import feedparser #Importar biblioteca para organizar feed de notícias
 import googlemaps #Importar biblioteca para obter as rotas
 import time #Importar biblioteca do tempo
 
@@ -19,9 +19,11 @@ sensor = Adafruit_DHT.DHT22
 #Configuração do pino de leitura do sensor de temperatura
 pin = 'P8_11'
 
+#Configuração dos pinos utilizados pelos botões de mudança de cor e mudança de perfil:
 GPIO.setup("P8_12", GPIO.IN)
 GPIO.setup("P8_14", GPIO.IN)
 
+#Criação de uma classe auxilar para fazer a troca de perfis e cores do display
 class aux():
     pushbutton = 0
     color ="white"
@@ -34,6 +36,10 @@ weather_api_token = '4ecc5df768c626180a20aa8bfdc0db96' #Substitua esse token pel
 #é necessário utilizar uma API, para isso sugerimos o site: ipstack.com, basta se registar, garantir seu token e substituir na
 #variável abaixo com nome ip_token. (Obs.: Utilizamos o ip para obter as informações de localização)
 ip_token = '33a23fcdf35dc1446075208d4461cfec' #Substitua esse token pelo seu token criado
+#Para adquirir as informações de rota, vamos utilizar uma API do google maps, para isso é necessário que o usuário crie sua chave
+#de acesso no site https://cloud.google.com/maps-platform/?hl=pt-br, basta clicar em primeiros passos, selecionar a opção Routes
+#e seguir os passos sequentes para se cadastrar. Em seguida cole seu código chave na variável googlemaps_key abaixo.
+googlemaps_key = 'AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg' #Substitua esse código de acesso pelo que você criou
 latitude = None #Definindo latitude como nula (para usar o IP)	
 longitude = None #Definindo longitude como nula (para usar o IP)
 #Definindo o tamanho das letras a serem utilizadas:
@@ -128,6 +134,7 @@ class Clock(Frame): #Frame é a classe pai
 
 
 #Criação da classe Weather para captar as informações de previsão do tempo
+#Sua declaração e inicialização é similar à explicada para a classe Clock
 class Weather(Frame):
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
@@ -316,42 +323,46 @@ class Weather(Frame):
         self.after(6000, self.get_weather) #Executa novamente o método self.get_weather após 6000ms
 
 
-
+#Criação da classe abaixo para exibir o label de Notícias na interface
+#Sua declaração e inicialização é semelhante à explicada para a classe Clock
 class Noticias(Frame):
 
     def __init__(self, master = None):
         Frame.__init__(self, master, bg='black')
         
-        self.manchetes = Frame(self, bg="black")
-        self.manchetes.pack(side=TOP)
-       
+        self.manchetes = Frame(self, bg="black") #Definição do atributo manchetes, e definição de sua cor de fundo
+        self.manchetes.pack(side=TOP) #Posicionamento do widget      
 	
-	self.manchetes_url = "http://rss.uol.com.br/feed/noticias.xml" #ultimasnoticias
+	self.manchetes_url = "http://rss.uol.com.br/feed/noticias.xml" #Endereço RSS fonte das últimas notícias
 
-
-        self.get_manchete()
+        self.get_manchete() #Méotodo para fazer a aquisição das notícias
 
 
     def get_manchete(self):
         try:
-            # remove all children
+            # Remover todas as notícias que podem estar na tela
             for widget in self.manchetes.winfo_children():
                 widget.destroy()
-
+		
+		#Abaixo, há uma sequência de lógica if responsável por alterar as notícias que são exibidas, de acordo com os perfis pré configurados
             if aux.change_prof == 0:
                 self.titulo = "Ultimas Noticias"
-                self.noticiaslbl = Label(self.manchetes, text=self.titulo)
-                self.noticiaslbl["font"] = ("Helvetica", texto_medio)
-                self.noticiaslbl["bg"] = "black"
-                self.noticiaslbl["fg"] = aux.color
-                self.noticiaslbl.pack(side=TOP, anchor=W)
+                self.noticiaslbl = Label(self.manchetes, text=self.titulo) #Criar um label filho de self.manchetes que exibe o conteúdo da variável self.titulo
+                self.noticiaslbl["font"] = ("Helvetica", texto_medio) #Definir características da fonte
+                self.noticiaslbl["bg"] = "black" #Definir cor do plano de fundo
+                self.noticiaslbl["fg"] = aux.color #Definir cor da fonte
+                self.noticiaslbl.pack(side=TOP, anchor=W) #Posicionar o label
+		
+		#Exibição das Principais Notícias (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 1:
                 self.titulo = "Principais Noticias"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
                 self.noticiaslbl["font"] = ("Helvetica", texto_medio)
                 self.noticiaslbl["bg"] = "black"
                 self.noticiaslbl["fg"] = aux.color
-                self.noticiaslbl.pack(side=TOP, anchor=W)            	
+                self.noticiaslbl.pack(side=TOP, anchor=W) 
+		
+		#Exibição das Notícias sobre Tecnologia (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 2:
                 self.titulo = "Tecnologia"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -359,7 +370,8 @@ class Noticias(Frame):
                 self.noticiaslbl["bg"] = "black"
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
-
+		
+		#Exibição das Notícias sobre Econômia (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 3:
                 self.titulo = "Economia"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -368,6 +380,7 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
+		#Exibição das Notícias de Esportes (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 4:
                 self.titulo = "Esportes"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -376,6 +389,7 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
+		#Exibição das Notícias de Jogos (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 5:
                 self.titulo = "Jogos"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -384,6 +398,7 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
+		#Exibição das Notícias de Cinema (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 6:
                 self.titulo = "Cinema"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -392,6 +407,7 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
+		#Exibição das Notícias sobre Vestibular (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 7:
                 self.titulo = "Vestibular"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -400,6 +416,7 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
 
+		#Exibição das Notícias sobre Música (construção semelhante a vista acima para as Últimas Notícias):
             if aux.change_prof == 8:
                 self.titulo = "Musica"
                 self.noticiaslbl = Label(self.manchetes, text=self.titulo)
@@ -408,120 +425,95 @@ class Noticias(Frame):
                 self.noticiaslbl["fg"] = aux.color
                 self.noticiaslbl.pack(side=TOP, anchor=W)
                 aux.change_prof = 0    
-            feed = feedparser.parse(self.manchetes_url)
-
+            feed = feedparser.parse(self.manchetes_url) #Capturando rss pelo pelo feedparser
+		
+		#Exibição de 5 notícias:
             for post in feed.entries[0:5]:
-                headline = Manchetes_foto(self.manchetes, post.title)
+                headline = Manchetes_foto(self.manchetes, post.title) #Função Manchetes_foto será encarregada de configurar a exibição com as figuras
                 headline.pack(side=TOP, anchor=W)
 
         except Exception as e:
-            #traceback.print_exc()
             print "Error: %s. Cannot get news." % e
 
-        self.after(600000, self.get_manchete)
+        self.after(600000, self.get_manchete) #Atualizar notícias após 600000ms
 
-
+#Criação da classe Manchetes para exibição das Manchetes com título e figura
+#Sua declaração e inicialização é semelhante à explicada para a classe Clock
 class Manchetes_foto(Frame):
     def __init__(self, master= None, event_name=""):
         Frame.__init__(self, master, bg='black')
-
+	#Abrindo a imagem correta, fazendo o tratatamento e atribuindo a variável encarregada
         image = Image.open("assets/Newspaper.png")
         image = image.resize((25, 25), Image.ANTIALIAS)
         image = image.convert('RGB')
         photo = ImageTk.PhotoImage(image)
-
-        self.piclbl = Label(self, bg='black', image=photo)
+	
+	#Criando o label que exibirá a figura e já atribuindo a imagem a ele:
+        self.piclbl = Label(self, bg='black', image=photo) 
         self.piclbl.image = photo
         self.piclbl.pack(side=LEFT, anchor=N)
-
-        self.eventName = event_name
-        self.eventNamelbl = Label(self, text=self.eventName, wraplength = 400)
+	
+        self.eventName = event_name #Recebendo o título
+        self.eventNamelbl = Label(self, text=self.eventName, wraplength = 400) #Criando o label para exibir o título
+	 #Configurando o widget: fonte, cor de plano de fundo, cor da letra, e fazendo o posicionamento:
         self.eventNamelbl["font"] = ("Helvetica", texto_pequeno)
         self.eventNamelbl["bg"] = "black"
         self.eventNamelbl["fg"] = aux.color
         self.eventNamelbl.pack(side=LEFT, anchor=N)
 
-
-class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
-    def __init__(self,master = None): #inicializo meu objeto, que se chama self e seus atributos (defino a funcao __init__)
-        Frame.__init__(self,master,bg='black') #chamando o construtor(metodo) da classe pai
-
-    
-
-        #Inicializando o googlemaps api
-        # gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
-        #origin="%s"&","&"%s" %(lat,lon)
+#Criação da classe responsável pelas Rotas
+#Sua declaração e inicialização é semelhante à explicada para a classe Clock
+class Rotas(Frame):
+    def __init__(self,master = None):
+        Frame.__init__(self,master,bg='black')
+	
+	#Definição do ponto de origem da rota
         self.origin="Avenida Nove de Julho, 3333, Jundiai"
-
-        #fazer logica de alterar perfil aqui
-        # if botao = 1
-        #   destination = x
-        #if botao = 1
-        #   destination = y
-
+	#Definição do ponto de destino da rota
         self.destination="Joao Carbonari Junior 64"
-        #language=pt-BR
-        #units=metric
-        #region=br
-        #deparature_time=now
-        
-
-        self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
+                
+	#Criação do widget rota:
+        self.widgetRota = Frame(self)
         self.widgetRota["bg"] = ("black")
-        self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
+        self.widgetRota.pack(side=TOP, anchor=N)
 
-        # self.titulo = "Destino"
-        # self.rotaslbl = Label(self.widgetRota, text = self.titulo)
-        # self.rotaslbl["font"] = ("Helvetica", texto_medio)
-        # self.rotaslbl["bg"] = "black"
-        # self.rotaslbl["fg"] = "white"
-        # self.rotaslbl.pack(side=TOP, anchor=W)
-
-        self.get_url()
-        # self.get_rota()
+        self.get_url() #Chamar o método responsável por pegar o URL
 
     def get_url(self):
-        
-        #self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
-        # if destroy == 1:
-        #     #self.widgetRota.destroy()
-        #     self.destination = "Avenida Nove de Julho 500, Jundiai"
-        # elif destroy == 2:
-        #     #self.widgetRota.destroy()
-        #     self.destination = "Joao Carbonari Junior 64" 
+    	
+	#Destruir alguma rota que esteja sendo exibida na tela:
         for widget in self.widgetRota.winfo_children():
              widget.destroy()
 
-
-        gmaps = googlemaps.Client(key='AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg')
-        #map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=-23.203,-46.9008&destination=Joao+Carbonari+Junior+64&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg"
-        map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&language=pt-BR&units=metric&region=br&departure_time=now&key=AIzaSyBiNUWP5FbEKdByztRyhINuDCjfemldWlg" % (self.origin,self.destination)
+	#Obtenção das rotas através da API do google maps:
+        gmaps = googlemaps.Client(key=googlemaps_key)
+        map_url = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&language=pt-BR&units=metric&region=br&departure_time=now&key=%s" % (self.origin,self.destination,googlemaps_key)
         map_req = requests.get(map_url)
         self.map_obj = json.loads(map_req.text)
 
-        
-        # self.widgetRota = Frame(self) #colocar Frame(master) cria um widget dominante na regiao impedindo a divisao de tela com o widget (de horas)
-        # self.widgetRota["bg"] = ("black")
-        # self.widgetRota.pack(side=TOP, anchor=N) #widgetRota eh um atributo do objeto self que eh um objeto da classe Rotas
-
-        self.titulo = "Destino"
-        self.rotaslbl = Label(self.widgetRota, text = self.titulo)
-        self.rotaslbl["font"] = ("Helvetica", texto_medio)
-        self.rotaslbl["bg"] = "black"
+	
+        self.titulo = "Destino" #Definir o título do widget
+        self.rotaslbl = Label(self.widgetRota, text = self.titulo) #Criar o label para exibir o título
+	#Configurar características de fonte, plano de fundo, cor da fonte e posicionamento do widget:
+        self.rotaslbl["font"] = ("Helvetica", texto_medio) 
+        self.rotaslbl["bg"] = "black" 
         self.rotaslbl["fg"] = aux.color
         self.rotaslbl.pack(side=TOP, anchor=W)
-        self.get_rota()
-        self.after(600000, self.get_url)
+        self.get_rota() #Método para exibir as rotas que estão organizadas no formato json em self.map_obj
+        self.after(600000, self.get_url) #Definir tempo para atualizar as rotas
 
     def get_rota(self):
         try:
             
-            self.destino = self.map_obj['routes'][0]['legs'][0]['end_address']
-            self.destline = Label(self.widgetRota)
-            self.destline["bg"] = "black"
-            self.plotdest() #Chamo a funcao, nao preciso enviar o objeto self.destino, pois estamos dentro da mesma classe
-            self.destline.pack(side=TOP, anchor = W) # a funcao ira plotar o destino ao lado do tempo e km, usando left, aqui seto TOP para que o prox label venha embaixo
-
+            self.destino = self.map_obj['routes'][0]['legs'][0]['end_address'] #Acessar o campo desejado de endereço
+            self.destline = Label(self.widgetRota) #Criar um label filho de self.widgetRota que representa uma linha de instrução da rota
+	    #Obs.: É necessário a criação de um label para cada linha, para fazer o plot do destino final com uma figura e
+	    #informações de tempo e distância posicionados lado a lado
+            self.destline["bg"] = "black" 
+            self.plotdest() #Método para plotar o destino
+            self.destline.pack(side=TOP, anchor = W) #Posicionamento da linha de instrução
+		
+		#Acessar as instruções da rota e configurar para exibi-la no display
             for self.step_ in self.map_obj['routes'][0]['legs'][0]['steps']:
                 self.step = self.step_['html_instructions']
                 for i in range(0,len(self.step)):
@@ -529,7 +521,8 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
                     self.step = self.step.replace("</b>","")
                     self.step = self.step.replace('<div style="font-size:0.9em">',". ")
                     self.step = self.step.replace("</div>","")
-
+		
+		#Assim como self.destline, esse é o label que representa uma linha de instrução, com figura, informação de tempo e distância
                 self.stepline = Label(self.widgetRota)
                 self.stepline["bg"] = "black"
                 self.plotstep()
@@ -541,36 +534,43 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
 
     
     def plotdest(self):
-
+	
+	#Definir a figura que será exibida e configurá-la para exibição:
         image = Image.open("assets/Arrow2.png")
         image = image.resize((25, 25), Image.ANTIALIAS)
         image = image.convert('RGB')
         photo = ImageTk.PhotoImage(image)
-
+	
+	#Criação e posicionamento do label da figura:
         self.main_arrowlbl = Label(self.destline, bg='black', image=photo)
         self.main_arrowlbl.image = photo
         self.main_arrowlbl.pack(side=LEFT, anchor=W)
 
-        
+        #Criação e posicionamento do label de destino final da rota:
         self.destinolbl = Label(self.destline, text = self.destino, wraplength = 400)
         self.destinolbl["font"] = ("Helvetica", 12)
         self.destinolbl["bg"] = "black"
         self.destinolbl["fg"] = aux.color
         self.destinolbl.pack(side=LEFT, anchor=W)
-
-        self.dist = self.map_obj['routes'][0]['legs'][0]['distance']['text']
-        self.dist_str = "(" + self.dist + ","
+	
+	#Acessar a distância do percurso e configurar exibição:
+        self.dist = self.map_obj['routes'][0]['legs'][0]['distance']['text'] 
+        self.dist_str = "(" + self.dist + "," 
+	
+	#Criação e posicionamento do label de distância:
         self.distlbl = Label(self.destline, text = self.dist_str)
         self.distlbl["font"] = ("Helvetica", texto_pp)
         self.distlbl["bg"] = "black"
         self.distlbl["fg"] = aux.color
         self.distlbl.pack(side=LEFT, anchor=W)
         
-
+	#Acessar o tempo do percurso e configurar exibição:
         self.tempo_est = self.map_obj['routes'][0]['legs'][0]['duration']['text']
         for i in range(0,len(self.tempo_est)):
             self.tempo_est = self.tempo_est.replace("minutos","min")
         self.tempo_est_str = self.tempo_est + ")"
+	
+	#Criação e posicionamento do label de tempo:
         self.time_estlbl = Label(self.destline, text = self.tempo_est_str)
         self.time_estlbl["font"] = ("Helvetica", texto_pp)
         self.time_estlbl["bg"] = "black"
@@ -580,33 +580,42 @@ class Rotas(Frame): #crio uma classe de funcoes (frame eh a classe pai)
 
     def plotstep(self):
         
+	#Definir a figura que será exibida e configurá-la para exibição:
         image = Image.open("assets/Arrow1.png")
         image = image.resize((25, 25), Image.ANTIALIAS)
         image = image.convert('RGB')
         photo = ImageTk.PhotoImage(image)
-
+	
+	#Criação e posicionamento do label da figura:
         self.arrowlbl = Label(self.stepline, bg='black', image=photo)
         self.arrowlbl.image = photo
         self.arrowlbl.pack(side=LEFT, anchor=W)
-
+	
+	#Criação e posicionamento do label de instrução do passo:
         self.steplbl = Label(self.stepline, text = self.step, wraplength = 400)
         self.steplbl["font"] = ("Helvetica", texto_pp)
         self.steplbl["bg"] = "black"
         self.steplbl["fg"] = aux.color
         self.steplbl.pack(side=LEFT, anchor=W)
-
+	
+	#Acessar a distância do passo e configurar exibição:
         self.step_dist = self.step_['distance']['text']
         self.step_dist_str = "(" + self.step_dist + ","
+	
+	#Criação e posicionamento do label de distância do passo:
         self.step_distlbl = Label(self.stepline, text = self.step_dist_str)
         self.step_distlbl["font"] = ("Helvetica", texto_pp)
         self.step_distlbl["bg"] = "black"
         self.step_distlbl["fg"] = aux.color
         self.step_distlbl.pack(side=LEFT, anchor=W)
-
+	
+	#Acessar o tempo do passo e configurar exibição:
         self.step_temp = self.step_['duration']['text']
         for i in range(0,len(self.step_temp)):
             self.step_temp = self.step_temp.replace("minutos","min")
         self.step_temp_str = self.step_temp + ")"
+	
+	#Criação e posicionamento do label de tempo do passo:
         self.step_templbl = Label(self.stepline, text = self.step_temp_str)
         self.step_templbl["font"] = ("Helvetica", texto_pp)
         self.step_templbl["bg"] = "black"
@@ -628,8 +637,6 @@ class FullscreenWindow:
         self.state = False
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
-        #self.tk.bind("<space>", self.changeColor)
-        #self.tk.bind("<p>", self.changeProfile)
         # clock
         self.clock = Clock(self.topFrame)
         self.clock.pack(side=RIGHT, anchor=N, padx=10, pady=10)
@@ -658,8 +665,7 @@ class FullscreenWindow:
         self.tk.attributes("-fullscreen", False)
         return "break"
 
-    
-         
+    #Abaixo está configurado as rotas e notícias desejadas por cada perfil cadastrado. Aqui o usuário pode personalizar para atender as suas preferências:
     def my_callback_one(self, event=None):
         aux.change_prof = aux.change_prof + 1
         if aux.change_prof == 1:
@@ -738,86 +744,9 @@ class FullscreenWindow:
     def gpio(self, event=None):       
         GPIO.add_event_detect("P8_12", GPIO.RISING, callback = self.my_callback_one)
         GPIO.add_event_detect("P8_14", GPIO.RISING, callback = self.my_callback_two)
-
-
-    
-    #def changeProfile(self, event=None):
-        
-        #self.rotas.widgetRota.destroy()
-        #    if aux.change_prof == 1:
-            #self.rotas.widgetRota.destroy()
-        #    self.rotas.destination = "Joao Carbonari Junior 64"
-        #    self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias 
-            #self.rotas.get_url(2) 
-        #if aux.change_prof == 2:
-            #self.rotas.widgetRota.destroy()
-        #    self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
-        #    self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
-            #self.rotas.get_url(1)
-	#    if aux.change_prof == 3:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
-	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
-	        #self.rotas.get_url(3) 
-	#    if aux.change_prof == 4:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
-	#        self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
-	        #self.rotas.get_url(4) 
-	#    if aux.change_prof == 5:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Jacinto Favoretto 230"
-	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
-	        #self.rotas.get_url(5) 
-	#    if aux.change_prof == 6:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Avenida Sao Carlos 1200"
-	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
-	        #self.rotas.get_url(6) 
-	#    if aux.change_prof == 7:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
-	#        self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
-	        #self.rotas.get_url(7) 
-	#    if aux.change_prof == 8:
-	        #self.rotas.widgetRota.destroy()
-	#        self.rotas.destination = "Episcopal 640"
-	#        self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
-	        #self.rotas.get_url(8) 
-        #aux.change_prof = 0
-        #self.rotas.get_url()
-        #self.noticias.get_manchete()            
-        #return "break"
-
-
-    #def changeColor(self, event=None):
-    #    aux.pushbutton = aux.pushbutton+1
-    #    if aux.pushbutton == 0:
-    #        aux.color = "white"
-    #    if aux.pushbutton == 1:
-    #        aux.color = "red"
-    #    if aux.pushbutton == 2:
-    #        aux.color = "blue"
-    #    if aux.pushbutton == 3:
-    #        aux.color = "yellow"
-    #        aux.pushbutton = -1
-    #    self.clock.timelbl.configure(fg=aux.color)
-    #    self.noticias.noticiaslbl.configure(fg=aux.color)
-    #    self.weather.templbl.configure(fg=aux.color)
-    #    self.weather.atuallbl.configure(fg=aux.color)
-    #    self.weather.prevlbl.configure(fg=aux.color)
-    #    self.weather.locallbl.configure(fg=aux.color)
-    #    self.clock.d_of_wlbl.configure(fg=aux.color)
-    #    self.clock.datelbl.configure(fg=aux.color)
-    #    self.noticias.get_manchete()
-	    # self.sensor.sensorlbl.configure(fg=aux.color)
-	    # self.sensor.tempamblbl.configure(fg=aux.color)
-	    # self.sensor.umidlbl.configure(fg=aux.color)
-     #   return "break"
-
     
 if __name__ == '__main__':
     w = FullscreenWindow()
-    print "a"
+    print "a" # ????
     w.tk.mainloop()
         
