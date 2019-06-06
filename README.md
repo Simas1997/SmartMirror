@@ -96,7 +96,7 @@ Para montar o circuito deste projeto, você precisará de:
 
 Com todos estes materiais, monte o circuito como o da imagem a seguir:
 
-*imagemimagemimagem*
+![Circuito](https://github.com/Simas1997/SmartMirror/blob/master/Imagens/Circuito.JPG)
 
 Fique atento às portas utilizadas na BBB, além do GND e do VCC 3.3V, utilizamos a porta P8_11 para o sensor e as portas P8_12 e P8_14 para os botões.
 
