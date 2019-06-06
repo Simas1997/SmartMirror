@@ -736,7 +736,7 @@ class FullscreenWindow:
         self.rotas.get_url()
         self.noticias.get_manchete()
         
-    #Este método faz com que quando os pinos P8_12 e P8_14 da beagle sejam pressionados haja uma interrupção no processo e os métodos my_callback_one e my_callback_two sejam chamados.   
+    #Este método faz com que quando os pinos P8_12 e P8_14 da beagle recebam sinal alto haja uma interrupção no processo e os métodos my_callback_one e my_callback_two sejam chamados.   
     def gpio(self, event=None):       
         GPIO.add_event_detect("P8_12", GPIO.RISING, callback = self.my_callback_one)
         GPIO.add_event_detect("P8_14", GPIO.RISING, callback = self.my_callback_two)
