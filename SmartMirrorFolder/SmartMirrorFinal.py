@@ -622,10 +622,11 @@ class Rotas(Frame):
         self.step_templbl["fg"] = aux.color
         self.step_templbl.pack(side=LEFT, anchor=W)
     
-	
+# Criação da classe FullscreeWindow, ela reunirá todos os elementos que serão exibidos na tela, e terá as funções para a interrupção com os botões.
 class FullscreenWindow:
 
     def __init__(self):
+	#Configuração para que seja exibida uma tela completamente preta
         self.tk = Tk()
         self.tk.configure(background='black')
         self.topFrame = Frame(self.tk, background = 'black')
@@ -635,88 +636,79 @@ class FullscreenWindow:
         self.centerFrame.pack(side = TOP, fill=BOTH, expand = YES)
         self.bottomFrame.pack(side = BOTTOM, fill=BOTH, expand = YES)
         self.state = False
+	#Configuração do botão enter para entrar em tela cheia e esc para sair da tela cheia.
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
-        # clock
+        #criação de uma instância da classe clock
         self.clock = Clock(self.topFrame)
         self.clock.pack(side=RIGHT, anchor=N, padx=10, pady=10)
-        # weather
+        #criação de uma instância da classe weather
         self.weather = Weather(self.topFrame)
         self.weather.pack(side=LEFT, anchor=N, padx=10, pady=10)
-        # news
+        #criação de uma instância da classe news
         self.noticias = Noticias(self.bottomFrame)
         self.noticias.pack(side=LEFT, anchor=S, padx=10, pady=60)
-        #sensor
-        #self.sensor = Sensor(self.centerFrame)
-        #self.sensor.pack(side=LEFT, anchor=N, padx=10, pady=10)
-        #rotas
+        #criação de uma instância da classe rotas
         self.rotas = Rotas(self.bottomFrame)
         self.rotas.pack(side=RIGHT, anchor=S, padx=10, pady=60)
-
-        self.gpio()
-
+	
+        self.gpio() #Chamar o método gpio
+    #Esse método é responsável por entrar no modo tela cheia.
     def toggle_fullscreen(self, event=None):
-        self.state = not self.state  # Just toggling the boolean
+        self.state = True 
         self.tk.attributes("-fullscreen", self.state)
         return "break"
-
+    #Esse método é responsável por sair do modo tela cheia.
     def end_fullscreen(self, event=None):
         self.state = False
         self.tk.attributes("-fullscreen", False)
         return "break"
 
+    #Este método é chamado toda vez que o botão de alterar perfil é pressionado.
     #Abaixo está configurado as rotas e notícias desejadas por cada perfil cadastrado. Aqui o usuário pode personalizar para atender as suas preferências:
     def my_callback_one(self, event=None):
-        aux.change_prof = aux.change_prof + 1
+        aux.change_prof = aux.change_prof + 1 #A variável change_prof é incrementada para que o próximo perfil seja selecionado.
         if aux.change_prof == 1:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Joao Carbonari Junior 64"
-            self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias 
-    #self.rotas.get_url(2) 
+            self.noticias.manchetes_url = "http://rss.home.uol.com.br/index.xml" #principais noticias
+		
         if aux.change_prof == 2:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Nove de Julho 500, Jundiai"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/tecnologia.xml" #tecnologia
-    #self.rotas.get_url(1)
+		
         if aux.change_prof == 3:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Francisco Antonio Mafra 210"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/economia.xml" #economia
-    #self.rotas.get_url(3) 
+   
         if aux.change_prof == 4:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Trabalhador Sao Carlense 400"
             self.noticias.manchetes_url = "https://esporte.uol.com.br/ultimas/index.xml" #esporte
-    #self.rotas.get_url(4) 
+   
         if aux.change_prof == 5:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Jacinto Favoretto 230"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/jogos.xml" #jogos
-    #self.rotas.get_url(5) 
+   
         if aux.change_prof == 6:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Avenida Sao Carlos 1200"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/cinema.xml" #cinema
-    #self.rotas.get_url(6) 
+   
         if aux.change_prof == 7:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Doutor Carlos de Camargo Salles 414"
             self.noticias.manchetes_url = "http://rss.uol.com.br/feed/vestibular.xml" #vestibular
-    #self.rotas.get_url(7) 
+  
         if aux.change_prof == 8:
-    #self.rotas.widgetRota.destroy()
             self.rotas.destination = "Episcopal 640"
             self.noticias.manchetes_url = "https://musica.uol.com.br/ultnot/index.xml" #musica
-    #self.rotas.get_url(8) 
             aux.change_prof = 0
+	#Aqui as rotas e as notícias são atualizadas.
         self.rotas.get_url()
         self.noticias.get_manchete()
         
 
        
-
+    #Este método é chamado toda vez que o botão de alterar cor é pressionado.
     def my_callback_two(self, event=None):
-        aux.pushbutton = aux.pushbutton + 1
+        aux.pushbutton = aux.pushbutton + 1 #A variável pushbutton é incrementada para que a próxima cor seja selecionada.
         if aux.pushbutton == 0:
             aux.color = "white"
         if aux.pushbutton == 1:
@@ -726,6 +718,8 @@ class FullscreenWindow:
         if aux.pushbutton == 3:
             aux.color = "yellow"
             aux.pushbutton = -1
+	
+	#Neste bloco as cores das labels são alteradas de acordo com a variável color.
         self.clock.timelbl.configure(fg=aux.color)
         self.noticias.noticiaslbl.configure(fg=aux.color)
         self.weather.templbl.configure(fg=aux.color)
@@ -737,16 +731,17 @@ class FullscreenWindow:
         self.clock.d_of_wlbl.configure(fg=aux.color)
         self.clock.datelbl.configure(fg=aux.color)
         self.rotas.rotaslbl.configure(fg=aux.color)
+	
+	#Aqui as rotas e as notícias são atualizadas.
         self.rotas.get_url()
         self.noticias.get_manchete()
         
-        
+    #Este método faz com que quando os pinos P8_12 e P8_14 da beagle sejam pressionados haja uma interrupção no processo e os métodos my_callback_one e my_callback_two sejam chamados.   
     def gpio(self, event=None):       
         GPIO.add_event_detect("P8_12", GPIO.RISING, callback = self.my_callback_one)
         GPIO.add_event_detect("P8_14", GPIO.RISING, callback = self.my_callback_two)
-    
+
 if __name__ == '__main__':
-    w = FullscreenWindow()
-    print "a" # ????
-    w.tk.mainloop()
+    w = FullscreenWindow() #criação de uma instância da classe FulscreenWindow.
+    w.tk.mainloop() #Faz com que haja um loop da instância criada.
         
