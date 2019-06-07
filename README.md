@@ -74,8 +74,6 @@ Agora, realizaremos a instalação das bibliotecas utilizadas no projeto.Para is
 	
 	sudo pip install pil
 	
-	sudo pip install Pillow
-	
 	sudo pip install Adafruit_DHT
 	
 	sudo pip install Adafruit_BBIO
