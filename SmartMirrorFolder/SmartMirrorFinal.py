@@ -46,7 +46,7 @@ longitude = None #Definindo longitude como nula (para usar o IP)
 texto_gg = 94
 texto_grande = 48
 texto_medio = 28
-texto_pequeno = 10
+texto_pequeno = 14
 texto_pp = 10
 
 #Atribuindo as imagens às respectivas variáveis:
@@ -548,7 +548,7 @@ class Rotas(Frame):
 
         #Criação e posicionamento do label de destino final da rota:
         self.destinolbl = Label(self.destline, text = self.destino, wraplength = 400)
-        self.destinolbl["font"] = ("Helvetica", 12)
+        self.destinolbl["font"] = ("Helvetica", texto_pequeno)
         self.destinolbl["bg"] = "black"
         self.destinolbl["fg"] = aux.color
         self.destinolbl.pack(side=LEFT, anchor=W)
