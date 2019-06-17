@@ -120,4 +120,4 @@ Aguarde alguns segundos e então você verá a seguinte tela:
 
 Porém ela ainda não estará em tela cheia, para isso pressione *Enter* no teclado.
 
-Para encerrar, gostaria de convidá-los a assistir nosso vídeo, onde explicamos com mais detalhes o projeto: *linkdovídeo*
+Para encerrar, gostaria de convidá-los a assistir nosso vídeo, onde explicamos com mais detalhes o projeto: https://www.youtube.com/watch?v=xS_4jMLrH-s
